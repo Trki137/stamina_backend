@@ -10,6 +10,7 @@ router.post("", (req, res, next) => {
     let result = await User.checkEmail(email);
 
     if (result) {
+      res.status(409);
       res.send(result);
       return;
     }
@@ -17,6 +18,7 @@ router.post("", (req, res, next) => {
     result = await User.checkUsername(username);
 
     if (result) {
+      res.status(409);
       res.send(result);
       return;
     }

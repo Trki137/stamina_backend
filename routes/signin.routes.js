@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/UserModel");
 
-router.get("", (req, res, next) => {
+router.post("", (req, res, next) => {
   (async () => {
     const username = req.body.username;
     const password = req.body.password;
@@ -10,6 +10,8 @@ router.get("", (req, res, next) => {
     let result = await User.checkUsernameExists(username);
 
     if (result) {
+      res.status(404);
+      console.log(result);
       res.send(result);
       return;
     }
