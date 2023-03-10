@@ -14,7 +14,7 @@ const sql_create_users_table = `
         username    VARCHAR(40)  NOT NULL,
         email       VARCHAR(50)  NOT NULL,
         password    VARCHAR(100) NOT NULL,
-        description VARCHAR(300) NOT NULL,
+        description VARCHAR(300),
         userId      SERIAL       NOT NULL,
         image       VARCHAR(50),
         PRIMARY KEY (userId),
