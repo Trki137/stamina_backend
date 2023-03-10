@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/UserModel");
+const fs = require("fs");
 
 router.post("", (req, res, next) => {
   (async () => {
@@ -20,6 +21,16 @@ router.post("", (req, res, next) => {
 
     result = await user.signin();
     delete result.password;
+
+    if (result.image) {
+      const imagePath = "./images/" + result.image;
+      const imageData = fs.readFileSync(imagePath);
+      const base64ImageData = Buffer.from(imageData).toString("base64");
+      const data = { user: result, image: base64ImageData };
+
+      res.send(data);
+      return;
+    }
 
     res.send(result);
   })();
