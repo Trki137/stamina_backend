@@ -61,7 +61,11 @@ module.exports = class UserModel {
             SELECT username,
                    userid,
                    image,
-                   (SELECT COUNT(*) FROM follows where follows.follow_userid = users.userid) as followedBy
+                   (SELECT COUNT(*) FROM follows where follows.follow_userid = users.userid) as followedBy,
+                   (SELECT COUNT(*)
+                    FROM follows
+                    where follows.userid = $1
+                      AND follows.follow_userid = users.userid)                              as isfollowing
             FROM users
             where userid <> $1
         `;
