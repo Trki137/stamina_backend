@@ -36,7 +36,45 @@ router.get("/allUsers/:id", (req, res, next) => {
 });
 
 //TODO: follow user
-router.post("/follow", (req, res, next) => {});
+router.post("/follow", (req, res, next) => {
+  (async () => {
+    const userIdFollowed = req.body.followed;
+    const userIdFollowedBy = req.body.followedBy;
+
+    if (!userIdFollowedBy || !userIdFollowed) {
+      res.send("Error. Expected 2 users");
+      return;
+    }
+
+    const result = await User.follow(userIdFollowed, userIdFollowedBy);
+
+    if (!result) {
+      res.status(500);
+      res.send("Something went wrong. Please try again later");
+      return;
+    }
+    res.send("Successfully");
+  })();
+});
 
 //TODO: unfollow user
-router.post("/unfollow", (req, res, next) => {});
+router.post("/unfollow", (req, res, next) => {
+  (async () => {
+    const userIdFollowed = req.body.followed;
+    const userIdFollowedBy = req.body.followedBy;
+
+    if (!userIdFollowedBy || !userIdFollowed) {
+      res.send("Error. Expected 2 users");
+      return;
+    }
+
+    const result = await User.unfollow(userIdFollowed, userIdFollowedBy);
+
+    if (!result) {
+      res.status(500);
+      res.send("Something went wrong. Please try again later");
+      return;
+    }
+    res.send("Successfully");
+  })();
+});

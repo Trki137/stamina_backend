@@ -9,6 +9,53 @@ module.exports = class UserModel {
     this.password = password;
   }
 
+  static async follow(followed, followedBy) {
+    if (!(await this.checkUser(followed))) return null;
+    if (!(await this.checkUser(followedBy))) return null;
+
+    const query = "INSERT INTO follows VALUES ($1,$2)";
+
+    try {
+      const result = await db.query(query, [followedBy, followed]);
+      console.log(result);
+      return result.rowCount > 0 ? result : null;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
+  static async unfollow(followed, followedBy) {
+    if (!(await this.checkUser(followed))) return null;
+    if (!(await this.checkUser(followedBy))) return null;
+
+    const query =
+      "DELETE FROM follows WHERE userid = $1 AND follow_userid = $2";
+
+    try {
+      const result = await db.query(query, [followedBy, followed]);
+      console.log(result);
+      return result.rowCount > 0 ? result : null;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
+  static async checkUser(userId) {
+    let query = "SELECT * FROM users WHERE userId = $1";
+
+    try {
+      let result = await db.query(query, [userId]);
+      console.log(userId);
+      console.log(result);
+      if (result.rowCount === 0) return null;
+      return result;
+    } catch (e) {
+      return null;
+    }
+  }
+
   static async getOtherUsers(id) {
     const query = `
             SELECT username,
