@@ -3,6 +3,7 @@ const router = express.Router();
 
 const User = require("../models/UserModel");
 const fs = require("fs");
+const sharp = require("sharp");
 
 module.exports = router;
 //TODO: userProfile
@@ -19,10 +20,12 @@ router.get("/:id", (req, res, next) => {
 
     for (let i = 0; i < result.length; i++) {
       if (result[i].image) {
-        /* const imagePath = "./images/" + result[i].image;
-                         const imageData = fs.readFileSync(imagePath);
-                         result[i].image = Buffer.from(imageData).toString("base64");*/
-        result[i].image = "http://localhost:3001/./images/" + result[i].image;
+        const imagePath = "./images/" + result[i].image;
+        const imageBuffer = await sharp(imagePath)
+          .resize(100)
+          .jpeg({ quality: 100 })
+          .toBuffer();
+        result[i].image = imageBuffer.toString("base64");
       }
     }
 
