@@ -19,6 +19,64 @@ module.exports = class UserModel {
     this.password = password;
   }
 
+  static async getFollowers(id) {
+    const query = `SELECT users.userid,
+                              username,
+                              concat(firstname, ' ', lastname) as name,
+                              image
+                       FROM users
+                                INNER JOIN follows ON follows.userid = users.userid
+                       where follows.userid <> $1
+                         AND follows.follow_userid = $1`;
+
+    try {
+      return (await db.query(query, [id])).rows;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
+  static async getFollowing(id) {
+    const query = `SELECT users.userid,
+                              username,
+                              concat(firstname, ' ', lastname) as name,
+                              image
+                       FROM users
+                                INNER JOIN follows ON follows.follow_userid = users.userid
+                       where follows.userid = $1`;
+
+    try {
+      return (await db.query(query, [id])).rows;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
+  static async getProfile(id) {
+    const query = `SELECT username,
+                              email,
+                              description,
+                              image,
+                              concat(firstname, ' ', lastname)                                   as name,
+                              (SELECT COUNT(*) from follows where follows.userid = users.userid) as numOfFollowing,
+                              (SELECT COUNT(*)
+                               from follows
+                               where follows.follow_userid = users.userid)                       as numOfFollowers
+                       FROM users
+                       where userid = $1`;
+
+    try {
+      const result = await db.query(query, [id]);
+
+      return result.rowCount > 0 ? result.rows[0] : null;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
   static async follow(followed, followedBy) {
     if (!(await this.checkUser(followed))) return null;
     if (!(await this.checkUser(followedBy))) return null;
