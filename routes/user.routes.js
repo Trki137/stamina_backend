@@ -16,6 +16,7 @@ router.get("/allUsers/:id", (req, res, next) => {
     const result = await User.getOtherUsers(id);
 
     if (!result) {
+      res.status(500);
       res.send("An error occurred, please try again later.");
       return;
     }

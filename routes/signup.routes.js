@@ -28,7 +28,15 @@ router.post("", (req, res, next) => {
       return;
     }
 
-    const user = new User(username, email, req.body.password, null, null);
+    const user = new User(
+      req.body.firstname,
+      req.body.lastname,
+      username,
+      email,
+      req.body.password,
+      null,
+      null
+    );
 
     await user.signup();
 
@@ -52,7 +60,15 @@ router.post("/sign-up-with-image", upload.single("image"), (req, res, next) => {
       return;
     }
 
-    const user = new User(username, email, userData.password, fileName, null);
+    const user = new User(
+      userData.firstname,
+      userData.lastname,
+      username,
+      email,
+      userData.password,
+      fileName,
+      null
+    );
     await user.signup();
 
     const imagePath = "./images/" + fileName;
