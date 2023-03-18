@@ -7,7 +7,9 @@ const sharp = require("sharp");
 
 module.exports = router;
 //TODO: userProfile
-router.get("/:id", (req, res, next) => {
+router.get("/:id", (req, res, next) => {});
+
+router.get("/allUsers/:id", (req, res, next) => {
   (async () => {
     const id = req.params.id;
 
@@ -32,8 +34,6 @@ router.get("/:id", (req, res, next) => {
     res.send(result);
   })();
 });
-
-router.get("/allUsers/:id", (req, res, next) => {});
 
 //TODO: follow user
 router.post("/follow", (req, res, next) => {});
