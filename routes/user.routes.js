@@ -41,9 +41,9 @@ router.get("/:id", (req, res, next) => {
     if (result.image) {
       const imagePath = "./images/" + result.image;
       const imageBuffer = await sharp(imagePath)
-          .resize(100)
-          .jpeg({quality: 100})
-          .toBuffer();
+        .resize(100)
+        .jpeg({ quality: 100 })
+        .toBuffer();
       result.image = imageBuffer.toString("base64");
     }
 
@@ -115,9 +115,9 @@ const convertImage = async (data) => {
     if (data[i].image) {
       const imagePath = "./images/" + data[i].image;
       const imageBuffer = await sharp(imagePath)
-          .resize(100)
-          .jpeg({quality: 100})
-          .toBuffer();
+        .resize(100)
+        .jpeg({ quality: 100 })
+        .toBuffer();
       data[i].image = imageBuffer.toString("base64");
     }
   }
