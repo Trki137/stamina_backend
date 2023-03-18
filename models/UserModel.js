@@ -1,7 +1,17 @@
 const db = require("../db/db.js");
 const bcrypt = require("bcrypt");
 module.exports = class UserModel {
-  constructor(username, email, password, imageURL, description) {
+  constructor(
+    firstname,
+    lastname,
+    username,
+    email,
+    password,
+    imageURL,
+    description
+  ) {
+    this.firstname = firstname;
+    this.lastname = lastname;
     this.username = username;
     this.email = email;
     this.imageURL = imageURL;
@@ -61,6 +71,7 @@ module.exports = class UserModel {
             SELECT username,
                    userid,
                    image,
+                   concat(firstname, ' ', lastname)                                          as name,
                    (SELECT COUNT(*) FROM follows where follows.follow_userid = users.userid) as followedBy,
                    (SELECT COUNT(*)
                     FROM follows
@@ -135,6 +146,9 @@ module.exports = class UserModel {
     } catch (e) {
       console.log(e);
     }
+    console.log(this.password);
+    console.log(this.username);
+    console.log(result);
     const success = await bcrypt.compare(
       this.password,
       result.rows[0].password
@@ -144,8 +158,9 @@ module.exports = class UserModel {
   }
 
   async signup() {
-    const query = `INSERT INTO users (username, email, password, description, image)
-                       VALUES ($1, $2, $3, $4, $5)`;
+    const query = `INSERT INTO users
+                           (username, email, password, description, image, firstname, lastname)
+                       VALUES ($1, $2, $3, $4, $5, $6, $7)`;
 
     try {
       await bcrypt.hash(this.password, 10, async (err, hash) => {
@@ -155,6 +170,8 @@ module.exports = class UserModel {
           hash,
           this.description,
           this.imageURL,
+          this.firstname,
+          this.lastname,
         ]);
       });
     } catch (e) {

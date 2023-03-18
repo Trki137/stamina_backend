@@ -8,6 +8,11 @@ router.post("", (req, res, next) => {
     const username = req.body.username;
     const password = req.body.password;
 
+    if (!username) {
+      res.status(500);
+      res.send("No username");
+    }
+
     let result = await User.checkUsernameExists(username);
 
     if (result) {
@@ -17,7 +22,7 @@ router.post("", (req, res, next) => {
       return;
     }
 
-    let user = new User(username, null, password, null, null);
+    let user = new User(null, null, username, null, password, null, null);
 
     result = await user.signin();
     delete result.password;
@@ -26,7 +31,7 @@ router.post("", (req, res, next) => {
       const imagePath = "./images/" + result.image;
       const imageData = fs.readFileSync(imagePath);
       const base64ImageData = Buffer.from(imageData).toString("base64");
-      const data = { user: result, image: base64ImageData };
+      const data = {user: result, image: base64ImageData};
 
       res.send(data);
       return;
