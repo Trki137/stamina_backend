@@ -19,6 +19,21 @@ module.exports = class UserModel {
     this.password = password;
   }
 
+  static async getImage(id) {
+    const query = `SELECT image
+                       FROM users
+                       WHERE userid = $1`;
+
+    try {
+      const result = await db.query(query, [id]);
+
+      return result.rowCount > 0 ? result.rows[0].image : null;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
   static async getFollowers(id) {
     const query = `SELECT users.userid,
                               username,
@@ -195,6 +210,33 @@ module.exports = class UserModel {
         : null;
     } catch (e) {
       console.log(e);
+    }
+  }
+
+  async update(id) {
+    const query = `UPDATE users
+                       SET username    = $1,
+                           email       = $2,
+                           firstname   = $3,
+                           lastname    = $4,
+                           description = $5,
+                           image       = $6
+                       WHERE userid = $7
+        `;
+
+    try {
+      return await db.query(query, [
+        this.username,
+        this.email,
+        this.firstname,
+        this.lastname,
+        this.description,
+        this.imageURL,
+        id,
+      ]);
+    } catch (err) {
+      console.log(err);
+      return null;
     }
   }
 

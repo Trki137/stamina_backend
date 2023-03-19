@@ -4,6 +4,20 @@ const router = express.Router();
 const User = require("../models/UserModel");
 const sharp = require("sharp");
 
+const multer = require("multer");
+const fs = require("fs");
+
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, "./images");
+    },
+    filename: function (req, file, cb) {
+      cb(null, Date.now() + "_" + file.originalname);
+    },
+  }),
+});
+
 router.get("/followers/:id", (req, res, next) => {
   (async () => {
     const id = req.params.id;
@@ -126,5 +140,81 @@ router.post("/:id", (req, res, next) => {
     res.send(result);
   })();
 });
+
+router.put("/update/:id", (req, res, next) => {
+  (async () => {
+    const userId = req.params.id;
+    console.log(userId);
+    const oldImageName = await User.getImage(userId);
+
+    const user = new User(
+      req.body.firstname,
+      req.body.lastname,
+      req.body.username,
+      req.body.email,
+      null,
+      oldImageName,
+      req.body.description
+    );
+
+    console.log(user);
+    const result = await user.update(userId);
+
+    if (!result) {
+      res.status(500);
+      res.send("Error on server");
+      return;
+    }
+
+    res.send("Success");
+  })();
+});
+router.put(
+  "/update-with-image/:id",
+  upload.single("image"),
+  (req, res, next) => {
+    (async () => {
+      const userId = req.params.id;
+      const fileName = req.file.filename;
+      const userData = JSON.parse(req.body.userInfo);
+
+      const oldImageName = await User.getImage(userId);
+
+      if (oldImageName) {
+        fs.unlink("./images/" + oldImageName, (err) => {
+          if (err) throw err;
+        });
+
+        console.log(oldImageName + " deleted successfully");
+      }
+
+      const user = new User(
+        userData.firstname,
+        userData.lastname,
+        userData.username,
+        userData.email,
+        null,
+        fileName,
+        userData.description
+      );
+
+      const result = await user.update(userId);
+
+      if (!result) {
+        res.status(500);
+        res.send("Error on server");
+        return;
+      }
+
+      const imagePath = "./images/" + fileName;
+      const imageData = fs.readFileSync(imagePath);
+      const base64ImageData = Buffer.from(imageData).toString("base64");
+      const data = { user, image: base64ImageData };
+
+      delete user.password;
+      res.send(data);
+    })();
+  }
+);
 
 module.exports = router;
