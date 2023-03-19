@@ -26,31 +26,6 @@ router.get("/following/:id", (req, res, next) => {
   })();
 });
 
-router.get("/:id", (req, res, next) => {
-  (async () => {
-    const id = req.params.id;
-
-    const result = await User.getProfile(id);
-
-    if (!result) {
-      res.status(404);
-      res.send("User not found");
-      return;
-    }
-
-    if (result.image) {
-      const imagePath = "./images/" + result.image;
-      const imageBuffer = await sharp(imagePath)
-        .resize(100)
-        .jpeg({ quality: 100 })
-        .toBuffer();
-      result.image = imageBuffer.toString("base64");
-    }
-
-    res.send(result);
-  })();
-});
-
 router.get("/allUsers/:id", (req, res, next) => {
   (async () => {
     const id = req.params.id;
@@ -64,7 +39,6 @@ router.get("/allUsers/:id", (req, res, next) => {
     }
 
     result = await convertImage(result);
-    console.log(result);
 
     res.send(result);
   })();
@@ -124,5 +98,33 @@ const convertImage = async (data) => {
 
   return data;
 };
+
+router.post("/:id", (req, res, next) => {
+  (async () => {
+    const id = req.params.id;
+    const currentUserId = req.body.id;
+    const result = await User.getProfile(id, currentUserId);
+
+    if (!result) {
+      res.status(404);
+      res.send("User not found");
+      return;
+    }
+
+    if (result.image) {
+      const imagePath = "./images/" + result.image;
+      const imageBuffer = await sharp(imagePath)
+        .resize(100)
+        .jpeg({ quality: 100 })
+
+        .toBuffer();
+      result.image = imageBuffer.toString("base64");
+    }
+
+    result.isfollowing = result.isfollowing !== null;
+
+    res.send(result);
+  })();
+});
 
 module.exports = router;
