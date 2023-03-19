@@ -54,7 +54,7 @@ module.exports = class UserModel {
     }
   }
 
-  static async getProfile(id) {
+  static async getProfile(id, currentUserId) {
     const query = `SELECT username,
                               email,
                               description,
@@ -63,12 +63,16 @@ module.exports = class UserModel {
                               (SELECT COUNT(*) from follows where follows.userid = users.userid) as numOfFollowing,
                               (SELECT COUNT(*)
                                from follows
-                               where follows.follow_userid = users.userid)                       as numOfFollowers
+                               where follows.follow_userid = users.userid)                       as numOfFollowers,
+                              (SELECT userid
+                               from follows
+                               where follows.userid = $1
+                                 and follows.follow_userid = $2)                                 as isFollowing
                        FROM users
-                       where userid = $1`;
+                       where userid = $2`;
 
     try {
-      const result = await db.query(query, [id]);
+      const result = await db.query(query, [currentUserId, id]);
 
       return result.rowCount > 0 ? result.rows[0] : null;
     } catch (e) {
