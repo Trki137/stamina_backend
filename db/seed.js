@@ -47,6 +47,7 @@ const sql_create_muscle_group_table = `
     (
         muscleId SERIAL      NOT NULL,
         name     VARCHAR(50) NOT NULL,
+        body_side VARCHAR(15) NOT NULL,
         PRIMARY KEY (muscleId),
         UNIQUE (name)
     );
