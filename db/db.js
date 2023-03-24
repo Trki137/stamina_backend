@@ -14,5 +14,5 @@ module.exports = {
       return res;
     });
   },
-  pool: pool,
+  pool: pool
 };

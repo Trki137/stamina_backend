@@ -47,6 +47,7 @@ const sql_create_muscle_group_table = `
     (
         muscleId SERIAL      NOT NULL,
         name     VARCHAR(50) NOT NULL,
+        body_side VARCHAR(15) NOT NULL,
         PRIMARY KEY (muscleId),
         UNIQUE (name)
     );
@@ -131,6 +132,8 @@ const sql_create_training_plan_table = `
     (
         workoutId  INT NOT NULL,
         trainingId INT NOT NULL,
+        time varchar(4),
+        repetition INT,
         PRIMARY KEY (workoutId, trainingId),
         FOREIGN KEY (workoutId) REFERENCES WORKOUT (workoutId),
         FOREIGN KEY (trainingId) REFERENCES TRAINING (trainingId)
@@ -208,6 +211,44 @@ const sql_create_joined_event_table = `
     );
 `;
 
+const insert_into_muscle_group = `
+    INSERT INTO muscle_group
+        (name, body_side)
+    VALUES ('adductor', 'posterior'),
+           ('abductors', 'anterior'),
+           ('abs', 'anterior'),
+           ('biceps', 'anterior'),
+           ('back-deltoids', 'posterior'),
+           ('calves', 'posterior'),
+           ('chest', 'anterior'),
+           ('forearm', 'anterior'),
+           ('front-deltoids', 'anterior'),
+           ('gluteal', 'posterior'),
+           ('hamstring', 'posterior'),
+           ('knees', 'anterior'),
+           ('lower-back', 'posterior'),
+           ('neck', 'anterior'),
+           ('trapezius', 'posterior'),
+           ('obliques', 'anterior'),
+           ('triceps', 'posterior'),
+           ('upper-back', 'posterior'),
+           ('quadriceps', 'anterior');
+`;
+
+const insert_into_equipment = `
+    INSERT INTO equipment
+        (name)
+    VALUES ('Bench'),
+           ('Barbell'),
+           ('Jumps ropes'),
+           ('Box'),
+           ('Foam Roller'),
+           ('Resistence band'),
+           ('Kettlebell'),
+           ('Pull-Up bar'),
+           ('Dumbbell');
+`;
+
 const tables = [
   sql_create_users_table,
   sql_create_activity_table,
@@ -228,6 +269,10 @@ const tables = [
   sql_create_group_event_table,
   sql_create_joined_event_table,
 ];
+
+const insert_data = [
+  insert_into_muscle_group,insert_into_equipment
+]
 
 const table_names = [
   "users",
@@ -250,6 +295,8 @@ const table_names = [
   "joined_event",
 ];
 
+const insert_table_names = ['muscle_group', 'equipment'];
+
 (async () => {
   console.log("Creating tables.");
   for (let i = 0; i < tables.length; i++) {
@@ -259,6 +306,18 @@ const table_names = [
       console.log(`Created table ${table_names[i]}.`);
     } catch (e) {
       console.log(`Error creating table ${table_names[i]}.`);
+      return console.log(e.message);
+    }
+  }
+
+  console.log("\nInserting data into database\n")
+  for(let i = 0; i < insert_data.length; i++){
+    console.log("Inserting data in table "+ insert_table_names[i]);
+    try{
+      await pool.query(insert_into_muscle_group[i],[]);
+      console.log("Data inserted for table "+ insert_table_names[i]);
+    }catch (e){
+      console.log("Error while inserting data into table "+insert_table_names[i]);
       return console.log(e.message);
     }
   }
