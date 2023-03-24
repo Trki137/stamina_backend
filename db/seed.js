@@ -132,6 +132,8 @@ const sql_create_training_plan_table = `
     (
         workoutId  INT NOT NULL,
         trainingId INT NOT NULL,
+        time varchar(4),
+        repetition INT,
         PRIMARY KEY (workoutId, trainingId),
         FOREIGN KEY (workoutId) REFERENCES WORKOUT (workoutId),
         FOREIGN KEY (trainingId) REFERENCES TRAINING (trainingId)

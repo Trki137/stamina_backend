@@ -13,9 +13,11 @@ const userRoute = require("./routes/user.routes");
 const muscleRoute = require("./routes/muscle_group.routes");
 const workoutRoute = require("./routes/workout.routes");
 const equipmentRoute = require("./routes/equipment.routes");
+const trainingRoute = require("./routes/training.routes");
 
 const PORT = 3001;
 
+app.use("/training", trainingRoute);
 app.use("/muscle",muscleRoute);
 app.use("/workout",workoutRoute);
 app.use("/equipment",equipmentRoute);
