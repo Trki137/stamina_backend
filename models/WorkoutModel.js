@@ -1,5 +1,5 @@
 const db = require("../db/db.js");
-
+const Muscle = require("./MuslceModel");
 module.exports = class Workout {
 
   constructor(name, description, intensity, equipment, muscle) {
@@ -40,24 +40,24 @@ module.exports = class Workout {
 
   async addWorkout() {
     const workoutQuery = `INSERT INTO workout (name, description, intensity)
-                 VALUES ($1, $2, $3) RETURNING workoutid`;
+                          VALUES ($1, $2, $3) RETURNING workoutid`;
 
-    const workoutEquipmentQuery = `INSERT INTO workout_equipment (workoutid,equipmentid) VALUES ($1,$2)`;
+    const workoutEquipmentQuery = `INSERT INTO workout_equipment (workoutid, equipmentid)
+                                   VALUES ($1, $2)`;
 
-    const workoutMuscleTargeted = `INSERT INTO muscle_workout_target (workoutid,muscleid) VALUES ($1,$2)`;
+    const workoutMuscleTargeted = `INSERT INTO muscle_workout_target (workoutid, muscleid)
+                                   VALUES ($1, $2)`;
 
 
-    try{
-      let workoutId = await db.query(workoutQuery,[this.name,this.description,this.intensity]);
+    try {
+      let workoutId = await db.query(workoutQuery, [this.name, this.description, this.intensity]);
       workoutId = workoutId.rows[0].workoutid;
-      console.log("Stored workout id = "+workoutId);
+      console.log("Stored workout id = " + workoutId);
 
-
-
-      if(this.equipment.length > 0){
-        for(let i = 0; i < this.equipment.length;i++){
-          const result = await db.query(workoutEquipmentQuery,[workoutId,this.equipment[i]]);
-          if(result.rowCount !== 1){
+      if (this.equipment.length > 0) {
+        for (let i = 0; i < this.equipment.length; i++) {
+          const result = await db.query(workoutEquipmentQuery, [workoutId, this.equipment[i]]);
+          if (result.rowCount !== 1) {
             console.log("Couldn't save workout equipment");
             return null;
           }
@@ -65,11 +65,11 @@ module.exports = class Workout {
 
       }
 
-      if(this.muscle === 0) return true;
+      if (this.muscle === 0) return true;
 
-      for(let i = 0; i < this.muscle.length;i++){
-        const result = await db.query(workoutMuscleTargeted,[workoutId,this.muscle[i]]);
-        if(result.rowCount !== 1){
+      for (let i = 0; i < this.muscle.length; i++) {
+        const result = await db.query(workoutMuscleTargeted, [workoutId, this.muscle[i]]);
+        if (result.rowCount !== 1) {
           console.log("Couldn't save muscle group targeted");
           return null;
         }
@@ -77,8 +77,8 @@ module.exports = class Workout {
 
       return true;
 
-    }catch(e){
-      console.log(e)
+    } catch (e) {
+      console.log(e);
       return null;
     }
 
@@ -95,12 +95,26 @@ module.exports = class Workout {
                             LEFT JOIN muscle_group ON muscle_workout_target.muscleid = muscle_group.muscleid
                    GROUP BY workout.workoutid`;
 
-    try{
-      return (await db.query(query,[])).rows;
-
-    }catch (e){
+    try {
+      let result = (await db.query(query, [])).rows;
+      result = Workout.formatResult(result);
+      //console.log(result);
+      return result;
+    } catch (e) {
       console.log(e);
       return null;
     }
+  }
+
+  static formatResult(data) {
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].equipment.length === 1 && data[i].equipment[0] === null) {
+        data[i].equipment = null;
+      }
+
+      data[i].muscle_targeted = Muscle.renameMuscles(data[i].muscle_targeted);
+    }
+
+    return data;
   }
 };
