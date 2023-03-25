@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Muscle = require("../models/MuslceModel")
-router.get("/all-muscles", (req,res,next) => {
+router.get("", (req,res,next) => {
   (async () => {
       const result = await Muscle.getAllMuscles();
 

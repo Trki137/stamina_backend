@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Workout = require("../models/WorkoutModel");
-router.post("/add-workout", (req,res,next) => {
+router.post("", (req,res,next) => {
   (async () => {
     console.log(req.body);
 
@@ -42,7 +42,7 @@ router.post("/add-workout", (req,res,next) => {
   })();
 });
 
-router.get("/all-workouts", (req,res,next) => {
+router.get("", (req,res,next) => {
   (async () => {
     const result = await Workout.getAllWorkouts();
 

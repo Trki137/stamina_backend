@@ -36,7 +36,7 @@ const sql_create_workout_table = `
     (
         workoutId   SERIAL      NOT NULL,
         name        VARCHAR(40) NOT NULL,
-        description VARCHAR(200),
+        description VARCHAR(500),
         intensity   VARCHAR(20) NOT NULL,
         PRIMARY KEY (workoutId),
         UNIQUE (name)
