@@ -91,7 +91,7 @@ module.exports = class Workout {
                    FROM workout
                             LEFT JOIN muscle_workout_target ON workout.workoutid = muscle_workout_target.workoutid
                             LEFT JOIN workout_equipment ON workout.workoutid = workout_equipment.workoutid
-                            LEFT JOIN equipment ON workout_equipment.workoutid = equipment.equipmentid
+                            LEFT JOIN equipment ON workout_equipment.equipmentid = equipment.equipmentid
                             LEFT JOIN muscle_group ON muscle_workout_target.muscleid = muscle_group.muscleid
                    GROUP BY workout.workoutid`;
 
