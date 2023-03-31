@@ -69,7 +69,10 @@ const sql_create_training_table = `
         intensity    VARCHAR(20) NOT NULL,
         description  VARCHAR(300),
         trainingId   SERIAL      NOT NULL,
-        avg_calories INT,
+        avg_calories NUMERIC(2),
+        numOfSets int NOT NULL,
+        restBetweenSets int NOT NULL,
+        restBetweenWorkouts int NOT NULL
         PRIMARY KEY (trainingId),
         UNIQUE (name)
     );
