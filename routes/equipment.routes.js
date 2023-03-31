@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Equipment = require('../models/EquipmentModel');
-router.get("/all-equipment", (req,res,next) => {
+router.get("", (req,res,next) => {
   (async () => {
     const result = await Equipment.getAllEquipment();
 
