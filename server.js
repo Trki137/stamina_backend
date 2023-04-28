@@ -15,6 +15,7 @@ const workoutRoute = require("./routes/workout.routes");
 const equipmentRoute = require("./routes/equipment.routes");
 const trainingRoute = require("./routes/training.routes");
 
+
 const PORT = 3001;
 
 app.use("/training", trainingRoute);
