@@ -14,7 +14,7 @@ const muscleRoute = require("./routes/muscle_group.routes");
 const workoutRoute = require("./routes/workout.routes");
 const equipmentRoute = require("./routes/equipment.routes");
 const trainingRoute = require("./routes/training.routes");
-
+const challengeRoute = require("./routes/challenge.routes");
 
 const PORT = 3001;
 
@@ -25,6 +25,7 @@ app.use("/equipment",equipmentRoute);
 app.use("/sign-up", signupRoute);
 app.use("/sign-in", signingRoute);
 app.use("/user", userRoute);
+app.use("/challenge",challengeRoute)
 
 app.listen(PORT, () => {
   console.log("Server listening on port " + PORT);
