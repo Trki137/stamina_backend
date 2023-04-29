@@ -33,6 +33,37 @@ module.exports = class Training {
     }
   }
 
+  static async getAllTraining(){
+    const query = `SELECT
+                       time,
+                       name,
+                       intensity,
+                       description,
+                       trainingid,
+                       avg_calories,
+                       (
+                           SELECT initcap(string_agg(muscle_group.name, ',')) AS targeted_muscles
+                           FROM training AS t2
+                                    JOIN training_plan ON training_plan.trainingid = t2.trainingid
+                                    JOIN workout ON training_plan.workoutid = workout.workoutid
+                                    JOIN muscle_workout_target ON workout.workoutid = muscle_workout_target.workoutid
+                                    JOIN muscle_group ON muscle_workout_target.muscleid = muscle_group.muscleid
+                           WHERE t2.trainingid = training.trainingid
+                           GROUP BY t2.trainingid
+                       ) as targeted_muscles
+                   FROM training`;
+
+    try{
+      const result = await db.query(query,[]);
+      return result.rows;
+
+    }catch (e){
+      console.log(e);
+      return null;
+    }
+
+  }
+
   async addWorkout() {
     const addTrainingQuery = `INSERT INTO training (time, name, intensity, description, avg_calories,numofsets, restbetweensets,restbetweenworkouts)
                               VALUES ($1, $2, $3, $4, $5, $6,$7,$8) RETURNING trainingid`;
@@ -41,7 +72,7 @@ module.exports = class Training {
 
     try{
       let trainingId = await db.query(addTrainingQuery,[this.time,this.name,this.intensity,this.description,this.avg_calories,this.numOfSets,this.restBetweenSets,this.restBetweenWorkouts]);
-      console.log(trainingId);
+
       trainingId = trainingId.rows[0].trainingid;
 
       if(this.workouts.length === 0) return true;

@@ -30,4 +30,19 @@ router.post("", (req, res, next) => {
   })();
 });
 
+router.get("/all-training", (req,res,next) => {
+  (async () => {
+      const data = await Training.getAllTraining();
+
+      if(data === null){
+        res.status(500);
+        res.send("Something went wrong. Try again later");
+        return;
+      }
+
+      res.status(200);
+      res.send(data);
+  })()
+})
+
 module.exports = router;
