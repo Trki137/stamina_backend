@@ -15,6 +15,7 @@ const workoutRoute = require("./routes/workout.routes");
 const equipmentRoute = require("./routes/equipment.routes");
 const trainingRoute = require("./routes/training.routes");
 const challengeRoute = require("./routes/challenge.routes");
+const eventRoute = require("./routes/event.routes");
 
 const PORT = 3001;
 
@@ -26,6 +27,7 @@ app.use("/sign-up", signupRoute);
 app.use("/sign-in", signingRoute);
 app.use("/user", userRoute);
 app.use("/challenge",challengeRoute)
+app.use("/event", eventRoute);
 
 app.listen(PORT, () => {
   console.log("Server listening on port " + PORT);
