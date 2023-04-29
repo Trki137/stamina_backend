@@ -46,17 +46,36 @@ module.exports = class Training {
       query = "SELECT eventid FROM event WHERE userid = $1 ORDER BY eventid DESC LIMIT 1";
       let eventId = (await db.query(query,[this.userId])).rows[0].eventid;
 
-      console.log(eventId);
-
       query = "INSERT INTO challenge (eventid, workoutid, date) VALUES ($1,$2,$3)";
-      let result =await db.query(query,[eventId,this.workoutId,this.date]);
+      await db.query(query,[eventId,this.workoutId,this.date]);
 
+      query = `SELECT event.eventid         AS id,
+                        users.username        AS createdBy,
+                        name,
+                        date                  AS until,
+                        event.description,
+                        image,
+                        (SELECT initcap(string_agg(equipment.name, ',')) AS targeted_muscles
+                         FROM challenge as c2
+                                  JOIN workout ON workout.workoutid = c2.workoutid
+                                  JOIN workout_equipment ON workout.workoutid = workout_equipment.workoutid
+                                  JOIN equipment on workout_equipment.equipmentid = equipment.equipmentid
+                         WHERE c2.eventid = event.eventid
+                         GROUP BY c2.eventid) as equipment
+                 FROM event
+                          INNER JOIN challenge ON event.eventid = challenge.eventid
+                          INNER JOIN users ON event.userid = users.userid
+                WHERE event.eventid = $1
+    `;
 
-      return true;
+      let result = await db.query(query,[eventId]);
+
+      return result.rows;
     }catch (e){
       console.log(e);
       return null;
     }
+
   }
 
 }

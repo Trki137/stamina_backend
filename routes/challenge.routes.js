@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Challenge = require("../models/ChallengeModel");
+const convertImage = require("../util/util");
 
 router.get("", (req,res,next) => {
   (async () => {
@@ -11,6 +12,8 @@ router.get("", (req,res,next) => {
       res.send("Please try again later.");
       return;
     }
+
+   await convertImage(result);
 
     res.status(200);
     res.send(result);
@@ -30,8 +33,10 @@ router.post("", (req, res,next) => {
       return;
     }
 
+    await convertImage(result)
+
     res.status(200);
-    res.send("OK");
+    res.send(result[0]);
   })()
 });
 
