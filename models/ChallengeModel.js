@@ -28,6 +28,7 @@ module.exports = class Training {
                           INNER JOIN users ON event.userid = users.userid
                  WHERE event.eventid NOT IN
                        (SELECT joined_event.eventid FROM joined_event WHERE joined_event.userid = $1)
+                        AND to_date(challenge.date, 'DD.MM.YYYY') >= CURRENT_DATE
     `;
 
     try{

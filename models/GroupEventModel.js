@@ -97,7 +97,9 @@ module.exports = class GroupEvent{
                             JOIN address ON group_event.addressid = address.addressid
                             JOIN city ON address.cityid = city.cityid
                    WHERE event.eventid NOT IN
-                         (SELECT joined_event.eventid FROM joined_event WHERE joined_event.userid = $1)`
+                         (SELECT joined_event.eventid FROM joined_event WHERE joined_event.userid = $1)
+                         AND (to_timestamp(date_time, 'YYYY.MM.DD-HH24:MI:SS')::TIMESTAMP WITHOUT TIME ZONE) > CURRENT_TIMESTAMP;
+                         `
 
     try{
       let result = await db.query(query,[userId]);
