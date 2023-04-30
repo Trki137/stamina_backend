@@ -9,7 +9,7 @@ module.exports = class Training {
     this.workoutId = workoutId;
   }
 
-  static async getAllChallenges(){
+  static async getAllChallenges(userid){
     let query = `SELECT event.eventid         AS id,
                         users.username        AS createdBy,
                         name,
@@ -26,10 +26,12 @@ module.exports = class Training {
                  FROM event
                           INNER JOIN challenge ON event.eventid = challenge.eventid
                           INNER JOIN users ON event.userid = users.userid
+                 WHERE event.eventid NOT IN
+                       (SELECT joined_event.eventid FROM joined_event WHERE joined_event.userid = $1)
     `;
 
     try{
-      let result = await db.query(query,[]);
+      let result = await db.query(query,[userid]);
       return result.rows;
     }catch (e){
       console.log(e);

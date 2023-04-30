@@ -32,7 +32,7 @@ module.exports = class GroupEvent{
       const addressModel = new Address(this.street, cityId);
 
       const addressId = await addressModel.saveAddress();
-      console.log(addressId);
+
       if (!addressId) return null;
 
       const query = `INSERT INTO group_event (max_space, eventid, addressid, date_time) VALUES ($1,$2,$3,$4)`;
@@ -78,7 +78,7 @@ module.exports = class GroupEvent{
     }
   }
 
-  static async getAllChallenges(){
+  static async getAllChallenges(userId){
     const query = `SELECT event.eventid                      AS id,
                           users.username                     AS createdby,
                           event.name,
@@ -95,10 +95,12 @@ module.exports = class GroupEvent{
                             JOIN group_event ON event.eventid = group_event.eventid
                             JOIN users ON event.userid = users.userid
                             JOIN address ON group_event.addressid = address.addressid
-                            JOIN city ON address.cityid = city.cityid`
+                            JOIN city ON address.cityid = city.cityid
+                   WHERE event.eventid NOT IN
+                         (SELECT joined_event.eventid FROM joined_event WHERE joined_event.userid = $1)`
 
     try{
-      let result = await db.query(query,[]);
+      let result = await db.query(query,[userId]);
       return result.rows;
     }catch (e){
       console.log(e);

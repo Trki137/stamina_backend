@@ -33,9 +33,9 @@ router.post("", (req,res,next) => {
 });
 
 
-router.get("", (req,res,next) => {
+router.get("/:id", (req,res,next) => {
   (async () => {
-    let result = await GroupEvent.getAllChallenges();
+    let result = await GroupEvent.getAllChallenges(req.params.id);
 
     if(!result){
       res.status(500);

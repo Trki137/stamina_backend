@@ -3,9 +3,9 @@ const router = express.Router();
 const Challenge = require("../models/ChallengeModel");
 const convertImage = require("../util/util");
 
-router.get("", (req,res,next) => {
+router.get("/:id", (req,res,next) => {
   (async () => {
-    let result = await Challenge.getAllChallenges();
+    let result = await Challenge.getAllChallenges(req.params.id);
 
     if(!result){
       res.status(500);
