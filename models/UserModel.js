@@ -19,6 +19,13 @@ module.exports = class UserModel {
     this.password = password;
   }
 
+  static async getUser(username){
+    const query = `SELECT * FROM users WHERE username = $1`;
+    const result = await db.query(query, [username]);
+
+    return result.rowCount > 0 ? result.rows[0] : null;
+  }
+
   static async getImage(id) {
     const query = `SELECT image
                        FROM users
@@ -248,9 +255,7 @@ module.exports = class UserModel {
     } catch (e) {
       console.log(e);
     }
-    console.log(this.password);
-    console.log(this.username);
-    console.log(result);
+
     const success = await bcrypt.compare(
       this.password,
       result.rows[0].password
@@ -258,6 +263,31 @@ module.exports = class UserModel {
 
     return success ? result.rows[0] : "Password doesn't match";
   }
+
+  async saveGoogleLogin(){
+    let query = `INSERT INTO users
+                           (username, email, password, description, image, firstname, lastname)
+                       VALUES ($1, $2, $3, $4, $5, $6, $7)`;
+    try{
+      let result = await db.query(query, [
+        this.username,
+        this.email,
+        this.password,
+        this.description,
+        this.imageURL,
+        this.firstname,
+        this.lastname,
+      ]);
+
+      if(result.rowCount === 0) return null;
+
+      return await UserModel.getUser(this.username);
+    }catch (e){
+      console.log(e);
+      return null;
+    }
+  }
+
 
   async signup() {
     const query = `INSERT INTO users

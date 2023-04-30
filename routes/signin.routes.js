@@ -41,4 +41,31 @@ router.post("", (req, res, next) => {
   })();
 });
 
+
+router.post("/google-sign-in", (req,res,next) => {
+  (async () => {
+    const {email,username, firstname, lastname,image} = req.body;
+
+    let result = await User.checkUsernameExists(username);
+
+    if(!result){
+      result = await User.getUser(username);
+      res.send(result);
+      return;
+    }
+
+    const user = new User(firstname,lastname,username,email,null,image,null);
+    console.log(user);
+    result = await user.saveGoogleLogin();
+    console.log(result);
+    if(!result){
+      res.status(500);
+      res.send("Please try again later");
+      return;
+    }
+
+    res.send(result);
+  })();
+})
+
 module.exports = router;
