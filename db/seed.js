@@ -81,7 +81,6 @@ const sql_create_event_table = `
     CREATE TABLE EVENT
     (
         eventId     SERIAL       NOT NULL,
-        date_time   TIMESTAMP    NOT NULL,
         name        VARCHAR(50)  NOT NULL,
         description VARCHAR(400) NOT NULL,
         userId      INT          NOT NULL,
@@ -94,6 +93,7 @@ const sql_create_challenge_table = `
     (
         eventId   INT NOT NULL,
         workoutId INT,
+        date varchar(15) NOT NULL,
         PRIMARY KEY (eventId),
         FOREIGN KEY (eventId) REFERENCES EVENT (eventId),
         FOREIGN KEY (workoutId) REFERENCES WORKOUT (workoutId)
@@ -196,6 +196,7 @@ const sql_create_group_event_table = `
         max_space INT NOT NULL,
         eventId   INT NOT NULL,
         addressId INT NOT NULL,
+        date_time   VARCHAR(40)  NOT NULL,
         PRIMARY KEY (eventId),
         FOREIGN KEY (eventId) REFERENCES EVENT (eventId),
         FOREIGN KEY (addressId) REFERENCES ADDRESS (addressId)
@@ -204,13 +205,13 @@ const sql_create_group_event_table = `
 const sql_create_joined_event_table = `
     CREATE TABLE joined_event
     (
-        joined_event_id INT NOT NULL,
+        joined_event_id SERIAL NOT NULL,
         userId          INT NOT NULL,
         eventId         INT NOT NULL,
         PRIMARY KEY (joined_event_id),
         UNIQUE (userId, eventId),
         FOREIGN KEY (userId) REFERENCES USERS (userId),
-        FOREIGN KEY (eventId) REFERENCES GROUP_EVENT (eventId)
+        FOREIGN KEY (eventId) REFERENCES EVENT (eventId)
     );
 `;
 

@@ -3,9 +3,6 @@ const router = express.Router();
 const Workout = require("../models/WorkoutModel");
 router.post("", (req,res,next) => {
   (async () => {
-    console.log(req.body);
-
-
     const equipment = req.body.equipment;
     if(equipment.length > 0){
       const result = await Workout.checkEquipment(equipment);

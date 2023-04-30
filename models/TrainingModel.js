@@ -1,5 +1,4 @@
 const db = require("../db/db.js");
-const worker_threads = require("worker_threads");
 
 module.exports = class Training {
 
