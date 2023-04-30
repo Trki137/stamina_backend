@@ -27,7 +27,7 @@ router.post("", (req,res,next) => {
       return;
     }
 
-    await convertImage(result);
+    await convertImage([result]);
     res.send(result)
   })()
 });
@@ -61,6 +61,8 @@ router.get("", (req,res,next) => {
       res.send("Something went wrong. Try again later");
       return;
     }
+
+    await convertImage(result);
 
     res.send(result);
 
