@@ -3,6 +3,7 @@ const router = express.Router();
 const Event = require("../models/EventModel");
 const User = require("../models/UserModel");
 const GroupEvent = require("../models/GroupEventModel");
+const convertImage = require("../util/util");
 
 router.post("", (req,res,next) => {
   (async () => {
@@ -26,6 +27,7 @@ router.post("", (req,res,next) => {
       return;
     }
 
+    await convertImage(result);
     res.send(result)
   })()
 });
@@ -79,6 +81,8 @@ router.delete("", (req,res,next) => {
       res.send("Something went wrong. Try again later");
       return;
     }
+
+
 
     res.send(result);
   })()
