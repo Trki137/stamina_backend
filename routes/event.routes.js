@@ -5,7 +5,7 @@ const User = require("../models/UserModel");
 router.post("/", (req,res,next) => {
   (async () => {
     const {userId, eventId} = req.body;
-
+    console.log(req.body);
     let result = await checkUserAndEvent(userId,eventId,res);
 
     if(!result) return;
@@ -20,6 +20,7 @@ router.post("/", (req,res,next) => {
 
     res.send(result);
   })()
+
 });
 
 
@@ -37,6 +38,7 @@ router.delete("", (req,res,next) => {
       res.status(500);
       res.send("Something went wrong. Try again later");
       return;
+
     }
 
 

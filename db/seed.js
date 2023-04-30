@@ -211,7 +211,7 @@ const sql_create_joined_event_table = `
         PRIMARY KEY (joined_event_id),
         UNIQUE (userId, eventId),
         FOREIGN KEY (userId) REFERENCES USERS (userId),
-        FOREIGN KEY (eventId) REFERENCES GROUP_EVENT (eventId)
+        FOREIGN KEY (eventId) REFERENCES EVENT (eventId)
     );
 `;
 
