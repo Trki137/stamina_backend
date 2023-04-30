@@ -81,7 +81,6 @@ const sql_create_event_table = `
     CREATE TABLE EVENT
     (
         eventId     SERIAL       NOT NULL,
-        date_time   TIMESTAMP    NOT NULL,
         name        VARCHAR(50)  NOT NULL,
         description VARCHAR(400) NOT NULL,
         userId      INT          NOT NULL,
@@ -196,6 +195,7 @@ const sql_create_group_event_table = `
         max_space INT NOT NULL,
         eventId   INT NOT NULL,
         addressId INT NOT NULL,
+        date_time   VARCHAR(40)  NOT NULL,
         PRIMARY KEY (eventId),
         FOREIGN KEY (eventId) REFERENCES EVENT (eventId),
         FOREIGN KEY (addressId) REFERENCES ADDRESS (addressId)

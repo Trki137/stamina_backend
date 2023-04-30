@@ -134,8 +134,6 @@ module.exports = class UserModel {
 
     try {
       let result = await db.query(query, [userId]);
-      console.log(userId);
-      console.log(result);
       if (result.rowCount === 0) return null;
       return result;
     } catch (e) {

@@ -13,10 +13,11 @@ module.exports = class Address{
       let result = await db.query(query,[this.street,this.cityId]);
       if(result.rowCount === 0) return null;
 
-      query = `SELECT addressid FROM address WHERE cityid = $1 AND street = $1`;
+      query = `SELECT addressid FROM address WHERE cityid = $1 AND street = $2`;
       result = await db.query(query, [this.cityId, this.street]);
 
       return result.rowCount > 0 ? result.rows[0].addressid : null;
+
 
     }catch (e){
       console.log(e);
