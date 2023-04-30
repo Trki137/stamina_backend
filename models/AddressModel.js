@@ -7,11 +7,16 @@ module.exports = class Address{
   }
 
   async saveAddress(){
-    const query = `INSERT INTO address (street, cityid) VALUES ($1,$2)`;
+    let query = `INSERT INTO address (street, cityid) VALUES ($1,$2)`;
 
     try{
       let result = await db.query(query,[this.street,this.cityId]);
-      return result.rowCount > 0;
+      if(result.rowCount === 0) return null;
+
+      query = `SELECT addressid FROM address WHERE cityid = $1 AND street = $1`;
+      result = await db.query(query, [this.cityId, this.street]);
+
+      return result.rowCount > 0 ? result.rows[0].addressid : null;
 
     }catch (e){
       console.log(e);

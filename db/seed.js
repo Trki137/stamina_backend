@@ -204,7 +204,7 @@ const sql_create_group_event_table = `
 const sql_create_joined_event_table = `
     CREATE TABLE joined_event
     (
-        joined_event_id INT NOT NULL,
+        joined_event_id SERIAL NOT NULL,
         userId          INT NOT NULL,
         eventId         INT NOT NULL,
         PRIMARY KEY (joined_event_id),

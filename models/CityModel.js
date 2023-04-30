@@ -7,11 +7,16 @@ module.exports = class City{
   }
 
   async saveCity(){
-    const query = `INSERT INTO city (pbr,name) VALUES ($1,$2)`;
+    let query = `INSERT INTO city (pbr,name) VALUES ($1,$2)`;
 
     try{
       let result = await db.query(query,[this.pbr,this.name]);
-      return result.rowCount > 0;
+      if(result.rowCount === 0) return null;
+
+      query = `SELECT cityid FROM city WHERE pbr = $1 AND name = $2`;
+      result = await db.query(query,[this.pbr,this.name]);
+
+      return result.rowCount > 0 ? result.rows[0].cityid : null;
     }catch (e){
       console.log(e);
       return null;
@@ -19,12 +24,12 @@ module.exports = class City{
 
   }
 
-  static async getCity(cityId){
-    const query = `SELECT * FROM city WHERE cityid = $1`;
+  static async getCity(pbr){
+    const query = `SELECT * FROM city WHERE pbr = $1`;
 
     try{
-      let result = await db.query(query,[cityId]);
-      return result.rowCount > 0 ? result.rows : null;
+      let result = await db.query(query,[pbr]);
+      return result.rowCount > 0 ? result.rows[0].cityid : null;
     }catch (e){
       console.log(e);
       return null;
