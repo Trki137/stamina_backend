@@ -35,7 +35,7 @@ router.post("", (req,res,next) => {
 
 router.get("/:id", (req,res,next) => {
   (async () => {
-    let result = await GroupEvent.getAllChallenges(req.params.id);
+    let result = await GroupEvent.getAllEvents(req.params.id);
 
     if(!result){
       res.status(500);

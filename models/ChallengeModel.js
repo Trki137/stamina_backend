@@ -78,4 +78,36 @@ module.exports = class Training {
 
   }
 
+  static async getMyChallenges(userId) {
+    const query = `SELECT event.eventid         AS id,
+                          users.username        AS createdBy,
+                          name,
+                          date                  AS until,
+                          event.description,
+                          image,
+                          finished,
+                          (SELECT initcap(string_agg(equipment.name, ',')) AS targeted_muscles
+                           FROM challenge as c2
+                                    JOIN workout ON workout.workoutid = c2.workoutid
+                                    JOIN workout_equipment ON workout.workoutid = workout_equipment.workoutid
+                                    JOIN equipment on workout_equipment.equipmentid = equipment.equipmentid
+                           WHERE c2.eventid = event.eventid
+                           GROUP BY c2.eventid) as equipment
+                   FROM event
+                            INNER JOIN challenge ON event.eventid = challenge.eventid
+                            INNER JOIN users ON event.userid = users.userid
+                            INNER JOIN joined_event
+                                       ON event.eventid = joined_event.eventid AND event.userid = joined_event.userid
+                   WHERE joined_event.userid = $1`;
+
+    try{
+      const result = await db.query(query,[userId]);
+      return result.rows;
+    }catch (e){
+      console.log(e);
+      return null;
+    }
+
+  }
+
 }
