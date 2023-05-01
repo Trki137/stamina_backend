@@ -1,4 +1,5 @@
 const db = require("../db/db.js");
+const Event = require("./EventModel");
 
 module.exports = class Training {
   constructor(userId, name, description,date, workoutId) {
@@ -41,15 +42,11 @@ module.exports = class Training {
   }
 
   async saveChallenge(){
-    let query = `INSERT INTO event (name, description,userid) VALUES ($1,$2,$3)`;
-
     try{
-      await db.query(query,[this.name,this.description,this.userId]);
+      const eventModel = new Event(this.name,this.description,this.userId);
+      let eventId = await eventModel.saveEvent();
 
-      query = "SELECT eventid FROM event WHERE userid = $1 ORDER BY eventid DESC LIMIT 1";
-      let eventId = (await db.query(query,[this.userId])).rows[0].eventid;
-
-      query = "INSERT INTO challenge (eventid, workoutid, date) VALUES ($1,$2,$3)";
+      let query = "INSERT INTO challenge (eventid, workoutid, date) VALUES ($1,$2,$3)";
       await db.query(query,[eventId,this.workoutId,this.date]);
 
       query = `SELECT event.eventid         AS id,

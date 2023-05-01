@@ -4,17 +4,18 @@ const City = require("./CityModel");
 
 module.exports = class Event{
 
-  constructor(name, description,userId){
+  constructor(name, description,userId, finished = false){
     this.name = name;
     this.description = description;
     this.userid = userId;
+    this.finished = finished;
   }
 
   async saveEvent(){
-    let query = `INSERT INTO event (name, description, userid) VALUES ($1,$2,$3)`;
+    let query = `INSERT INTO event (name, description, userid,finished) VALUES ($1,$2,$3, $4)`;
 
     try{
-      let result = await db.query(query,[this.name,this.description,this.userid]);
+      let result = await db.query(query,[this.name,this.description,this.userid,this.finished]);
       if(result.rowCount === 0) return null;
 
       query = `SELECT eventid FROM event WHERE userid = $1 ORDER BY eventid DESC LIMIT 1`;
