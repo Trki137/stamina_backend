@@ -13,7 +13,17 @@ module.exports = class Training {
     this.restBetweenWorkouts = restBetweenWorkouts;
     this.workouts = workouts;
   }
+  static async checkTraining(trainingId){
+    const query = `SELECT * FROM training WHERE trainingid = $1`;
 
+    try{
+      const result = await db.query(query,[trainingId]);
+      return result.rowCount > 0;
+    }catch (e){
+      console.log(e);
+      return null;
+    }
+  }
   static async checkWorkouts(workouts) {
     const query = `SELECT *
                    FROM workout

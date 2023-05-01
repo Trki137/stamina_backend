@@ -2,7 +2,7 @@ const db = require("../db/db");
 const Activity = require("./ActivityModel");
 
 module.exports = class ExerciseData{
-  constructor(name, date,userId,trainingId, time, calories,avg_hearth_rate) {
+  constructor(name,date,userId,trainingId, time, calories,avg_hearth_rate) {
     this.name = name;
     this.date = date;
     this.userId = userId;
@@ -38,7 +38,7 @@ module.exports = class ExerciseData{
                             JOIN activity ON exercise_data.activityid = activity.activityid
                    WHERE userid = $1`;
     try{
-      return await db.query(query, [userId]);
+      return (await db.query(query, [userId])).rows[0];
     }catch (e){
       console.log(e);
       return null;
@@ -56,7 +56,7 @@ module.exports = class ExerciseData{
                    GROUP BY DATE`;
 
     try{
-      return await db.query(query, [userId]);
+      return (await db.query(query, [userId])).rows[0];
     }catch (e){
       console.log(e);
       return null;

@@ -17,6 +17,7 @@ const trainingRoute = require("./routes/training.routes");
 const challengeRoute = require("./routes/challenge.routes");
 const groupEventRoute = require("./routes/group_event.routes");
 const eventRoute = require("./routes/event.routes");
+const dataRoute = require("./routes/exercise_data.routes");
 
 const PORT = 3001;
 
@@ -30,6 +31,7 @@ app.use("/user", userRoute);
 app.use("/challenge",challengeRoute)
 app.use("/group_event", groupEventRoute);
 app.use("/event", eventRoute);
+app.use("/exercise-data", dataRoute);
 
 
 app.listen(PORT, () => {
