@@ -27,8 +27,12 @@ const sql_create_activity_table = `
     (
         activityId SERIAL      NOT NULL,
         name       VARCHAR(40) NOT NULL,
+        date       VARCHAR(15), 
+        userid     INTEGER,
+        trainingid INTEGER,
         PRIMARY KEY (activityId),
-        UNIQUE (name)
+        FOREIGN KEY (userId) REFERENCES USERS (userId) ,
+        FOREIGN KEY (trainingid) REFERENCES TRAINING(trainingid)
     );
 `;
 const sql_create_workout_table = `
