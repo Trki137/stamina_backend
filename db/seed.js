@@ -76,7 +76,7 @@ const sql_create_training_table = `
         avg_calories NUMERIC(2),
         numOfSets int NOT NULL,
         restBetweenSets int NOT NULL,
-        restBetweenWorkouts int NOT NULL
+        restBetweenWorkouts int NOT NULL,
         PRIMARY KEY (trainingId),
         UNIQUE (name)
     );
@@ -175,11 +175,8 @@ const sql_create_exercise_data_table = `
         time            VARCHAR(30) NOT NULL,
         calories        INT,
         avg_hearth_rate INT,
-        userId          INT         NOT NULL,
         activityId      INT         NOT NULL,
         PRIMARY KEY (exerciseDataId),
-        UNIQUE (exerciseDataId, userId),
-        FOREIGN KEY (userId) REFERENCES USERS (userId),
         FOREIGN KEY (activityId) REFERENCES ACTIVITY (activityId)
     );
 `;
