@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 const Event = require("../models/EventModel");
 const User = require("../models/UserModel");
+const GroupEvent = require("../models/GroupEventModel");
+const Challenge = require("../models/ChallengeModel");
+
 router.post("/", (req,res,next) => {
   (async () => {
     const {userId, eventId} = req.body;
@@ -41,11 +44,68 @@ router.delete("", (req,res,next) => {
 
     }
 
-
-
     res.send(result);
   })()
 });
+
+router.put("", (req,res,next) => {
+  (async () => {
+    const {userId,eventId} = req.body;
+
+    let result = await User.checkUser(userId);
+
+    if(!result){
+      res.status(404);
+      res.send("User with id "+userId+" doesn't exist");
+      return;
+    }
+
+    result = await Event.checkEvent(eventId);
+
+    if(!result){
+      res.status(404);
+      res.send("User with id "+userId+" doesn't exist");
+      return;
+    }
+
+    result = await Event.finishEvent(userId, eventId);
+
+    if(!result){
+      res.status(500);
+      res.send("Please try again later.");
+      return;
+    }
+
+    res.send("OK");
+
+  })()
+});
+
+router.get("/:userId", (req,res,next) => {
+  (async () => {
+    const userId = req.params.userId;
+
+    const result = await User.checkUser(userId);
+
+    if(!result){
+      res.status(404);
+      res.send("User with id "+userId+" doesn't exist");
+      return;
+    }
+
+    const my_challenges = await Challenge.getMyChallenges(userId);
+    const my_events = await GroupEvent.getMyEvents(userId);
+
+    const data = {
+      my_events,
+      my_challenges
+    };
+
+    res.send(data);
+  })();
+});
+
+
 const checkUserAndEvent = async (userId, eventId,res) => {
   let result = await User.checkUser(userId);
 

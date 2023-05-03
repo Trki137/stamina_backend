@@ -27,8 +27,12 @@ const sql_create_activity_table = `
     (
         activityId SERIAL      NOT NULL,
         name       VARCHAR(40) NOT NULL,
+        date       VARCHAR(15), 
+        userid     INTEGER,
+        trainingid INTEGER,
         PRIMARY KEY (activityId),
-        UNIQUE (name)
+        FOREIGN KEY (userId) REFERENCES USERS (userId) ,
+        FOREIGN KEY (trainingid) REFERENCES TRAINING(trainingid)
     );
 `;
 const sql_create_workout_table = `
@@ -72,7 +76,7 @@ const sql_create_training_table = `
         avg_calories NUMERIC(2),
         numOfSets int NOT NULL,
         restBetweenSets int NOT NULL,
-        restBetweenWorkouts int NOT NULL
+        restBetweenWorkouts int NOT NULL,
         PRIMARY KEY (trainingId),
         UNIQUE (name)
     );
@@ -171,11 +175,8 @@ const sql_create_exercise_data_table = `
         time            VARCHAR(30) NOT NULL,
         calories        INT,
         avg_hearth_rate INT,
-        userId          INT         NOT NULL,
         activityId      INT         NOT NULL,
         PRIMARY KEY (exerciseDataId),
-        UNIQUE (exerciseDataId, userId),
-        FOREIGN KEY (userId) REFERENCES USERS (userId),
         FOREIGN KEY (activityId) REFERENCES ACTIVITY (activityId)
     );
 `;

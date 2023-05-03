@@ -1,6 +1,4 @@
 const db = require("../db/db");
-const Address = require("./AddressModel");
-const City = require("./CityModel");
 
 module.exports = class Event{
 
@@ -8,6 +6,18 @@ module.exports = class Event{
     this.name = name;
     this.description = description;
     this.userid = userId;
+  }
+
+  static async finishEvent(userId,eventId){
+    const query = `UPDATE joined_event SET finished = true WHERE userid = $1 AND eventid = $2`;
+
+    try{
+      const result = await db.query(query,[userId]);
+      return result.rowCount > 0;
+    }catch (e){
+      console.log(e);
+      return null;
+    }
   }
 
   async saveEvent(){
@@ -43,10 +53,10 @@ module.exports = class Event{
   }
 
   static async joinEvent(userId, eventId){
-    const query = `INSERT INTO joined_event (userid,eventid) VALUES ($1,$2)`;
+    const query = `INSERT INTO joined_event (userid,eventid,finished) VALUES ($1,$2,$3)`;
 
     try{
-      let result = await db.query(query,[userId,eventId]);
+      let result = await db.query(query,[userId,eventId,false]);
       return result.rowCount > 0;
     }catch (e){
       console.log(e);
