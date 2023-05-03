@@ -32,10 +32,10 @@ router.post("", (req,res,next) => {
       res.send("User with id "+userId + " doesn't exist");
       return;
     }
+    if(!trainingId)
+      result = await Training.checkTraining(trainingId);
 
-    result = await Training.checkTraining(trainingId);
-
-    if(!result){
+    if(trainingId && !result){
       res.status(404);
       res.send("Training with id "+trainingId + " doesn't exist");
       return;
@@ -130,7 +130,15 @@ router.post("/file-tcx",uploadFile.single('file'), (req,res,next) => {
 
     const path = "./tcxFile/" + req.file.filename;
     const tcxParser = new TCXParser(path);
-    const data = tcxParser.parseAndGetData();
+    let data = null;
+
+    try{
+      data = tcxParser.parseAndGetData();
+    }catch (e){
+      res.status(403);
+      res.send("Invalid file.");
+      return;
+    }
 
     if(!data){
       res.status(403);
