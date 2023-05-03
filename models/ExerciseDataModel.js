@@ -17,7 +17,7 @@ module.exports = class ExerciseData{
 
     try{
       let activityId = await activityModel.saveActivity();
-
+      if(!activityId) return null;
       const query = `INSERT INTO exercise_data (time, calories, avg_hearth_rate, activityid) VALUES ($1,$2,$3,$4)`;
       const result = await db.query(query,[this.time,this.calories,this.avg_hearth_rate,activityId]);
 

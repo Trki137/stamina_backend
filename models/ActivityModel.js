@@ -16,8 +16,8 @@ module.exports = class Activity{
 
         if(result.rowCount === 0) return null;
 
-        query = `SELECT activityid FROM activity WHERE userid=$1 AND date=$2 AND trainingid=$3`;
-        result = await db.query(query,[this.userId, this.date, this.trainingId]);
+        query = `SELECT activityid FROM activity WHERE userid=$1 AND date=$2`;
+        result = await db.query(query,[this.userId, this.date]);
 
         return result.rowCount > 0 ? result.rows[0].activityid : null;
       }catch (e){

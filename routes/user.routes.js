@@ -101,6 +101,7 @@ router.post("/unfollow", (req, res, next) => {
 const convertImage = async (data) => {
   for (let i = 0; i < data.length; i++) {
     if (data[i].image) {
+      if(data[i].image.startsWith("http")) continue;
       const imagePath = "./images/" + data[i].image;
       const imageBuffer = await sharp(imagePath)
         .resize(100)
