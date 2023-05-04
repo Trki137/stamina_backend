@@ -38,7 +38,7 @@ module.exports = class ExerciseData{
                             JOIN activity ON exercise_data.activityid = activity.activityid
                    WHERE userid = $1`;
     try{
-      return (await db.query(query, [userId])).rows[0];
+      return (await db.query(query, [userId])).rows;
     }catch (e){
       console.log(e);
       return null;
@@ -47,16 +47,16 @@ module.exports = class ExerciseData{
 
   static async getAvgUserData(userId){
     const query = `SELECT date,
-                          AVG(time::INTEGER)   AS avgtime,
-                          AVG(calories)        AS avgcalories,
-                          AVG(avg_hearth_rate) AS avg_hearth_rate
+                          TRUNC(AVG(time::FLOAT))   AS avgtime,
+                          TRUNC(AVG(calories))        AS avgcalories,
+                          TRUNC(AVG(avg_hearth_rate)) AS avg_hearth_rate
                    FROM exercise_data
                             JOIN activity ON exercise_data.activityid = activity.activityid
                    WHERE userid <> $1
                    GROUP BY DATE`;
 
     try{
-      return (await db.query(query, [userId])).rows[0];
+      return (await db.query(query, [userId])).rows;
     }catch (e){
       console.log(e);
       return null;

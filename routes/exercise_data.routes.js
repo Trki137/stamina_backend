@@ -69,6 +69,7 @@ router.get("/:userId" ,(req,res,next) => {
     }
 
     const userData = await Exercise.getUserData(userId);
+
     const avgData = await Exercise.getAvgUserData(userId);
 
     const data = {
