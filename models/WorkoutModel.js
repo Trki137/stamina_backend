@@ -53,14 +53,15 @@ module.exports = class Workout {
       let workoutId = await db.query(workoutQuery, [this.name, this.description, this.intensity]);
       workoutId = workoutId.rows[0].workoutid;
       console.log("Stored workout id = " + workoutId);
-
-      if (this.equipment.length > 0) {
+      console.log(this.equipment);
+      if (this.equipment && this.equipment.length > 0) {
         for (let i = 0; i < this.equipment.length; i++) {
           const result = await db.query(workoutEquipmentQuery, [workoutId, this.equipment[i]]);
           if (result.rowCount !== 1) {
             console.log("Couldn't save workout equipment");
             return null;
           }
+
         }
 
       }
@@ -100,6 +101,32 @@ module.exports = class Workout {
       result = Workout.formatResult(result);
       //console.log(result);
       return result;
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
+  static async getById(workoutId) {
+    const query = `SELECT workout.*,
+                          json_agg(DISTINCT muscle_group) as muscle_targeted,
+                          json_agg(DISTINCT equipment)    as equipment
+                   FROM workout
+                            LEFT JOIN muscle_workout_target ON workout.workoutid = muscle_workout_target.workoutid
+                            LEFT JOIN workout_equipment ON workout.workoutid = workout_equipment.workoutid
+                            LEFT JOIN equipment ON workout_equipment.equipmentid = equipment.equipmentid
+                            LEFT JOIN muscle_group ON muscle_workout_target.muscleid = muscle_group.muscleid
+                   WHERE workout.workoutid = $1
+                   GROUP BY workout.workoutid`;
+
+    try {
+      let result = (await db.query(query, [workoutId]));
+      if(result.rowCount === 0) return null;
+
+
+      result = Workout.formatResult(result.rows);
+
+      return result[0];
     } catch (e) {
       console.log(e);
       return null;

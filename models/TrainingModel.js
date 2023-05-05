@@ -1,4 +1,5 @@
 const db = require("../db/db.js");
+const Workout = require("./WorkoutModel");
 
 module.exports = class Training {
 
@@ -13,12 +14,64 @@ module.exports = class Training {
     this.restBetweenWorkouts = restBetweenWorkouts;
     this.workouts = workouts;
   }
+
   static async checkTraining(trainingId){
     const query = `SELECT * FROM training WHERE trainingid = $1`;
 
     try{
       const result = await db.query(query,[trainingId]);
       return result.rowCount > 0;
+    }catch (e){
+      console.log(e);
+      return null;
+    }
+  }
+
+  static async getById(trainingId){
+    const query = `SELECT
+                       training_plan.time,
+                       repetition,
+                       numOfSets,
+                       restBetweenSets,
+                       restBetweenWorkouts,
+                       workout.name,
+                       training_plan.workoutid
+                   FROM training_plan
+                            JOIN training ON training_plan.trainingid = training.trainingid
+                            JOIN workout ON training_plan.workoutid = workout.workoutid
+                   WHERE training_plan.trainingid = $1
+    `;
+
+    try{
+      const result = await db.query(query,[trainingId]);
+      if(result.rowCount === 0) return null;
+
+      const rows = result.rows;
+      const workoutIds = rows.map(row => row.workoutid);
+      const data = [];
+
+      for(let i = 0; i < rows.length * rows[0].numofsets; i++){
+        data.push({
+          sequence: i,
+          time: rows[i % rows.length].time,
+          repetition: rows[i % rows.length].repetition,
+          name: rows[i % rows.length].name
+        });
+      }
+
+      const workout_description = [];
+
+      for(let i = 0; i < workoutIds.length; i++){
+        const result =await Workout.getById(workoutIds[i]);
+
+        if(!result) return null;
+        workout_description.push(result);
+      }
+
+      return {
+        data,
+        workouts: workout_description
+      };
     }catch (e){
       console.log(e);
       return null;
