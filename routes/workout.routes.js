@@ -4,7 +4,7 @@ const Workout = require("../models/WorkoutModel");
 router.post("", (req,res,next) => {
   (async () => {
     const equipment = req.body.equipment;
-    if(equipment.length > 0){
+    if(equipment && equipment.length > 0){
       const result = await Workout.checkEquipment(equipment);
       if(!result){
         res.status(404);

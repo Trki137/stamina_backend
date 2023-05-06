@@ -126,7 +126,7 @@ router.post("/:id", (req, res, next) => {
       return;
     }
 
-    if (result.image) {
+    if (result.image && !result.image.startsWith("http")) {
       const imagePath = "./images/" + result.image;
       const imageBuffer = await sharp(imagePath)
         .resize(100)

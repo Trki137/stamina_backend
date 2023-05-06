@@ -45,4 +45,28 @@ router.get("/all-training", (req,res,next) => {
   })()
 })
 
+router.get("/:trainingId", (req,res,next) => {
+  (async () => {
+    const trainingId = req.params.trainingId;
+
+    const result = await Training.checkTraining(trainingId);
+
+    if(!result){
+      res.status(404);
+      res.send("Training with id " + trainingId +" doesn't exist");
+      return;
+    }
+
+    const data = await Training.getById(trainingId);
+
+    if(!data){
+      res.status(404);
+      res.send("Please try again later");
+      return;
+    }
+    res.send(data);
+
+  })()
+})
+
 module.exports = router;
