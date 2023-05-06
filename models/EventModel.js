@@ -12,7 +12,7 @@ module.exports = class Event{
     const query = `UPDATE joined_event SET finished = true WHERE userid = $1 AND eventid = $2`;
 
     try{
-      const result = await db.query(query,[userId]);
+      const result = await db.query(query,[userId,eventId]);
       return result.rowCount > 0;
     }catch (e){
       console.log(e);
@@ -82,6 +82,18 @@ module.exports = class Event{
 
     try{
       const result = await db.query(query,[eventId]);
+      return result.rowCount > 0;
+    }catch (e){
+      console.log(e);
+      return null;
+    }
+  }
+
+  static async update(eventId,name,description){
+    const query = `UPDATE event SET name=$1, description=$2 WHERE eventid=$3`;
+
+    try{
+      const result = await db.query(query,[name,description,eventId]);
       return result.rowCount > 0;
     }catch (e){
       console.log(e);

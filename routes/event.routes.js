@@ -4,6 +4,8 @@ const Event = require("../models/EventModel");
 const User = require("../models/UserModel");
 const GroupEvent = require("../models/GroupEventModel");
 const Challenge = require("../models/ChallengeModel");
+const convertImage = require("../util/util");
+
 
 router.post("/", (req,res,next) => {
   (async () => {
@@ -30,12 +32,11 @@ router.post("/", (req,res,next) => {
 router.delete("", (req,res,next) => {
   (async () => {
     const {userId, eventId} = req.body;
-
     let result = await checkUserAndEvent(userId,eventId,res);
 
     if(!result) return;
 
-    result = await Event.unJoinEvent();
+    result = await Event.unJoinEvent(userId, eventId);
 
     if(!result){
       res.status(500);
@@ -95,6 +96,9 @@ router.get("/:userId", (req,res,next) => {
 
     const my_challenges = await Challenge.getMyChallenges(userId);
     const my_events = await GroupEvent.getMyEvents(userId);
+
+    await convertImage(my_events);
+    await convertImage(my_challenges);
 
     const data = {
       my_events,

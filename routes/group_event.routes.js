@@ -3,11 +3,13 @@ const router = express.Router();
 const Event = require("../models/EventModel");
 const User = require("../models/UserModel");
 const GroupEvent = require("../models/GroupEventModel");
+const City = require("../models/CityModel");
+const Address = require("../models/AddressModel");
 const convertImage = require("../util/util");
 
 router.post("", (req,res,next) => {
   (async () => {
-    const {name, description,userId, max_space,date_time, street,pbr,cityName} = req.body;
+    const {name, description,userId, max_space,date_time, street,pbr,cityName,latitude,longitude} = req.body;
 
     let result = await User.checkUser(userId);
 
@@ -17,7 +19,7 @@ router.post("", (req,res,next) => {
       return null;
     }
 
-    const groupEvent = new GroupEvent(name, description,userId, max_space,date_time, street,pbr,cityName);
+    const groupEvent = new GroupEvent(name, description,userId, max_space,date_time, street,pbr,cityName,latitude,longitude);
 
     result = await groupEvent.saveEvent();
 
@@ -26,6 +28,8 @@ router.post("", (req,res,next) => {
       res.send("Something went wrong. Try again later.");
       return;
     }
+
+
 
     await convertImage([result]);
     res.send(result)
@@ -49,5 +53,43 @@ router.get("/:id", (req,res,next) => {
 
   })()
 });
+
+router.put("", (req,res,next) => {
+  (async () =>  {
+    const {max_space,date_time,eventId,cityId,pbr,name,addressId,street,latitude,longitude,eventName, description} = req.body;
+
+    let result = await Event.checkEvent(eventId);
+    if(!result){
+      res.status(404);
+      res.send("Event with id "+ eventId + " does not exist");
+      return;
+    }
+
+    result = await City.checkCity(cityId)
+    if(!result){
+      res.status(404);
+      res.send("City with id "+ cityId + " does not exist");
+      return;
+    }
+
+    result = await Address.checkAddress(addressId);
+    if(!result){
+      res.status(404);
+      res.send("Address with id "+ addressId + " does not exist");
+      return;
+    }
+
+    result = await GroupEvent.updateGroupEvent(max_space,date_time,eventId,cityId,pbr,name,addressId,street,latitude,longitude,eventName,description);
+
+    if(!result){
+      res.status(500);
+      res.send("Try again later");
+      return;
+    }
+
+    res.send("OK");
+
+  })()
+})
 
 module.exports = router;

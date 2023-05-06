@@ -4,7 +4,7 @@ const Address = require("./AddressModel");
 const Event = require("./EventModel");
 
 module.exports = class GroupEvent {
-  constructor(name, description, userId, max_space, date_time, street, pbr, cityName) {
+  constructor(name, description, userId, max_space, date_time, street, pbr, cityName,latitude,longitude) {
     this.name = name;
     this.description = description;
     this.userid = userId;
@@ -13,6 +13,8 @@ module.exports = class GroupEvent {
     this.street = street;
     this.pbr = pbr;
     this.cityName = cityName;
+    this.latitude = latitude;
+    this.longitude = longitude;
   }
 
   async saveEvent() {
@@ -29,7 +31,7 @@ module.exports = class GroupEvent {
         if (!cityId) return null;
       }
 
-      const addressModel = new Address(this.street, cityId);
+      const addressModel = new Address(this.street, cityId,this.latitude,this.longitude);
 
       const addressId = await addressModel.saveAddress();
 
@@ -115,6 +117,8 @@ module.exports = class GroupEvent {
 
   static async getMyEvents(userId) {
     const query = `SELECT event.eventid                      AS id,
+                            city.cityid,
+                            address.addressid,
                           users.username                     AS createdby,
                           event.name,
                           date_time                          AS startsAt,
@@ -123,9 +127,13 @@ module.exports = class GroupEvent {
                            FROM group_event AS g2
                                     JOIN joined_event ON g2.eventid = joined_event.eventid
                            WHERE g2.eventid = event.eventid) as remainingSpace,
+                          group_event.max_space,
                           city.name                          as city,
                           address.street                     as address,
-                          users.image
+                          users.image,
+                          city.pbr,
+                          latitude,
+                          longitude
                    FROM event
                             JOIN group_event ON event.eventid = group_event.eventid
                             JOIN users ON event.userid = users.userid
@@ -143,5 +151,25 @@ module.exports = class GroupEvent {
       return null;
     }
 
+  }
+
+  static async updateGroupEvent(max_space,date_time,eventId,cityId,pbr,name,addressId,street,latitude,longitude,eventName, description){
+    let result = await City.updateCity(cityId,pbr,name);
+    if(!result) return null;
+
+    result = await Address.updateAddress(addressId,street,latitude,longitude);
+    if(!result) return null;
+
+    result = await Event.update(eventId,eventName, description)
+    if(!result) return null;
+    const query = `UPDATE group_event SET max_space = $1, date_time=$2 WHERE eventid = $3`;
+
+    try{
+      result = await db.query(query,[max_space,date_time,eventId]);
+      return result.rowCount > 0;
+    }catch (e){
+      console.log(e);
+      return null;
+    }
   }
 };

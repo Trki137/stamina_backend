@@ -1,13 +1,12 @@
 const db = require("../db/db.js");
 const Event = require("./EventModel");
 
-module.exports = class Training {
-  constructor(userId, name, description,date, workoutId) {
+module.exports = class Challange {
+  constructor(userId, name, description,date) {
     this.userId = userId;
     this.name = name;
     this.description = description;
     this.date = date;
-    this.workoutId = workoutId;
   }
 
   static async getAllChallenges(userid){
@@ -16,14 +15,7 @@ module.exports = class Training {
                         name,
                         date                  AS until,
                         event.description,
-                        image,
-                        (SELECT initcap(string_agg(equipment.name, ',')) AS targeted_muscles
-                         FROM challenge as c2
-                                  JOIN workout ON workout.workoutid = c2.workoutid
-                                  JOIN workout_equipment ON workout.workoutid = workout_equipment.workoutid
-                                  JOIN equipment on workout_equipment.equipmentid = equipment.equipmentid
-                         WHERE c2.eventid = event.eventid
-                         GROUP BY c2.eventid) as equipment
+                        image
                  FROM event
                           INNER JOIN challenge ON event.eventid = challenge.eventid
                           INNER JOIN users ON event.userid = users.userid
@@ -46,22 +38,15 @@ module.exports = class Training {
       const eventModel = new Event(this.name,this.description,this.userId);
       let eventId = await eventModel.saveEvent();
 
-      let query = "INSERT INTO challenge (eventid, workoutid, date) VALUES ($1,$2,$3)";
-      await db.query(query,[eventId,this.workoutId,this.date]);
+      let query = "INSERT INTO challenge (eventid, date) VALUES ($1,$2)";
+      await db.query(query,[eventId,this.date]);
 
       query = `SELECT event.eventid         AS id,
                         users.username        AS createdBy,
                         name,
                         date                  AS until,
                         event.description,
-                        image,
-                        (SELECT initcap(string_agg(equipment.name, ',')) AS targeted_muscles
-                         FROM challenge as c2
-                                  JOIN workout ON workout.workoutid = c2.workoutid
-                                  JOIN workout_equipment ON workout.workoutid = workout_equipment.workoutid
-                                  JOIN equipment on workout_equipment.equipmentid = equipment.equipmentid
-                         WHERE c2.eventid = event.eventid
-                         GROUP BY c2.eventid) as equipment
+                        image
                  FROM event
                           INNER JOIN challenge ON event.eventid = challenge.eventid
                           INNER JOIN users ON event.userid = users.userid
@@ -85,19 +70,12 @@ module.exports = class Training {
                           date                  AS until,
                           event.description,
                           image,
-                          finished,
-                          (SELECT initcap(string_agg(equipment.name, ',')) AS targeted_muscles
-                           FROM challenge as c2
-                                    JOIN workout ON workout.workoutid = c2.workoutid
-                                    JOIN workout_equipment ON workout.workoutid = workout_equipment.workoutid
-                                    JOIN equipment on workout_equipment.equipmentid = equipment.equipmentid
-                           WHERE c2.eventid = event.eventid
-                           GROUP BY c2.eventid) as equipment
+                          finished
                    FROM event
                             INNER JOIN challenge ON event.eventid = challenge.eventid
                             INNER JOIN users ON event.userid = users.userid
                             INNER JOIN joined_event
-                                       ON event.eventid = joined_event.eventid AND event.userid = joined_event.userid
+                                       ON event.eventid = joined_event.eventid
                    WHERE joined_event.userid = $1`;
 
     try{
@@ -108,6 +86,23 @@ module.exports = class Training {
       return null;
     }
 
+
+  }
+
+
+  static async update(eventId,date,name,description){
+    let result = await Event.update(eventId,name,description);
+
+    if(!result) return null;
+
+    const query = `UPDATE challenge SET date=$1 WHERE eventid = $2`;
+    try{
+      result = await db.query(query,[date,eventId]);
+      return result.rowCount  > 0;
+    }catch (e){
+      console.log(e);
+      return null;
+    }
   }
 
 }

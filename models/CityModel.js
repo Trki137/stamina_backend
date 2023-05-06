@@ -24,6 +24,29 @@ module.exports = class City{
 
   }
 
+  static async checkCity(cityId){
+    const query = `SELECT * FROM city WHERE cityid = $1`;
+
+    try{
+      const result = await db.query(query,[cityId]);
+      return result.rowCount > 0;
+    }catch (e){
+      console.log(e);
+      return null;
+    }
+  }
+
+  static async updateCity(cityId,pbr,name){
+    const query = `UPDATE city SET pbr = $1, name = $2 WHERE cityid = $3`;
+
+    try{
+      const result = await db.query(query,[pbr,name,cityId]);
+      return result.rowCount > 0;
+    }catch (e){
+      console.log(e);
+      return null;
+    }
+  }
   static async getCity(pbr){
     const query = `SELECT * FROM city WHERE pbr = $1`;
 
@@ -31,6 +54,7 @@ module.exports = class City{
       let result = await db.query(query,[pbr]);
       return result.rowCount > 0 ? result.rows[0].cityid : null;
     }catch (e){
+
       console.log(e);
       return null;
     }
