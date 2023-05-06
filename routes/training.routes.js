@@ -57,7 +57,7 @@ router.get("/:trainingId", (req,res,next) => {
       return;
     }
 
-    const data = await Training.getById(trainingId)
+    const data = await Training.getById(trainingId);
 
     if(!data){
       res.status(404);

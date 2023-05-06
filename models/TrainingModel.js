@@ -29,13 +29,16 @@ module.exports = class Training {
 
   static async getById(trainingId){
     const query = `SELECT
+    training.trainingid,
                        training_plan.time,
                        repetition,
                        numOfSets,
                        restBetweenSets,
                        restBetweenWorkouts,
                        workout.name,
-                       training_plan.workoutid
+                       training_plan.workoutid,
+                       avg_calories,
+                       workout.intensity
                    FROM training_plan
                             JOIN training ON training_plan.trainingid = training.trainingid
                             JOIN workout ON training_plan.workoutid = workout.workoutid
@@ -50,13 +53,39 @@ module.exports = class Training {
       const workoutIds = rows.map(row => row.workoutid);
       const data = [];
 
+      let sequence = 0;
       for(let i = 0; i < rows.length * rows[0].numofsets; i++){
         data.push({
-          sequence: i,
+          sequence: sequence++,
           time: rows[i % rows.length].time,
           repetition: rows[i % rows.length].repetition,
-          name: rows[i % rows.length].name
+          name: rows[i % rows.length].name,
+          intensity: rows[i % rows.length].intensity
         });
+
+        if(i === rows.length * rows[0].numofsets - 1){
+          continue;
+        }
+
+        if(rows[0].restbetweenworkouts !== 0 && i % rows.length !== rows.length - 1){
+          data.push({
+            sequence: sequence++,
+            time: rows[0].restbetweenworkouts,
+            repetition: null,
+            name: "Rest",
+            intensity: "low"
+          });
+        }
+
+        if(rows[0].restbetweensets !== 0 && i % rows.length === rows.length - 1){
+          data.push({
+            sequence: sequence++,
+            time: rows[0].restbetweensets,
+            repetition: null,
+            name: "Rest",
+            intensity: "low"
+          });
+        }
       }
 
       const workout_description = [];
@@ -69,9 +98,15 @@ module.exports = class Training {
       }
 
       return {
+        trainingId: rows[0].trainingid,
+        restBetweenWorkouts: rows[0].restbetweenworkouts,
+        restBetweenSets: rows[0].restbetweensets,
+        numberOfSets: rows[0].numofsets,
+        avgCalories: rows[0].avg_calories,
         data,
         workouts: workout_description
       };
+
     }catch (e){
       console.log(e);
       return null;
