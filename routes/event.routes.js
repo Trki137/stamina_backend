@@ -14,7 +14,6 @@ router.post("/", (req,res,next) => {
     const {error, value} = validateEvent(req.body);
 
     if(error){
-      console.log(error);
       res.status(422);
       res.send(error.details);
       return;
@@ -44,7 +43,6 @@ router.delete("", (req,res,next) => {
     const {error, value} = validateEvent(req.body);
 
     if(error){
-      console.log(error);
       res.status(422);
       res.send(error.details);
       return;
@@ -73,7 +71,6 @@ router.put("", (req,res,next) => {
     const {error, value} = validateEvent(req.body);
 
     if(error){
-      console.log(error);
       res.status(422);
       res.send(error.details);
       return;
