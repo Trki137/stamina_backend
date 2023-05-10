@@ -15,8 +15,4 @@ const eventSchema = Joi.object().keys({
   eventId: id
 })
 
-const getMyEventsSchema = Joi.object().keys({
-
-})
-
 exports.validateEvent = validate(eventSchema);
