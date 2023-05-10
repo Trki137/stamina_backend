@@ -5,12 +5,24 @@ const User = require("../models/UserModel");
 const GroupEvent = require("../models/GroupEventModel");
 const Challenge = require("../models/ChallengeModel");
 const convertImage = require("../util/util");
+const {validateEvent} = require("../validation/eventValidator");
 
 
 router.post("/", (req,res,next) => {
   (async () => {
+
+    const {error, value} = validateEvent(req.body);
+
+    if(error){
+      console.log(error);
+      res.status(422);
+      res.send(error.details);
+      return;
+    }
+
+    console.log(value);
+
     const {userId, eventId} = req.body;
-    console.log(req.body);
     let result = await checkUserAndEvent(userId,eventId,res);
 
     if(!result) return;
@@ -31,6 +43,15 @@ router.post("/", (req,res,next) => {
 
 router.delete("", (req,res,next) => {
   (async () => {
+    const {error, value} = validateEvent(req.body);
+
+    if(error){
+      console.log(error);
+      res.status(422);
+      res.send(error.details);
+      return;
+    }
+
     const {userId, eventId} = req.body;
     let result = await checkUserAndEvent(userId,eventId,res);
 
@@ -51,6 +72,15 @@ router.delete("", (req,res,next) => {
 
 router.put("", (req,res,next) => {
   (async () => {
+    const {error, value} = validateEvent(req.body);
+
+    if(error){
+      console.log(error);
+      res.status(422);
+      res.send(error.details);
+      return;
+    }
+
     const {userId,eventId} = req.body;
 
     let result = await User.checkUser(userId);
