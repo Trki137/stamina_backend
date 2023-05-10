@@ -139,7 +139,7 @@ module.exports = class Training {
                        trainingid,
                        avg_calories,
                        (
-                           SELECT initcap(string_agg(muscle_group.name, ',')) AS targeted_muscles
+                           SELECT initcap(string_agg(DISTINCT(muscle_group.name), ',')) AS targeted_muscles
                            FROM training AS t2
                                     JOIN training_plan ON training_plan.trainingid = t2.trainingid
                                     JOIN workout ON training_plan.workoutid = workout.workoutid
