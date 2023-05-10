@@ -20,17 +20,17 @@ const addChallengeSchema = Joi.object().keys({
   userId: id
 });
 
-const updateChallenge = Joi.object().keys({
+const updateChallengeSchema = Joi.object().keys({
   eventId: id,
   date,
   name,
   description
 });
 
-const getChallenge = Joi.object().keys({
+const getChallengeSchema = Joi.object().keys({
   id
 }) ;
 
 exports.validateAddChallenge = validate(addChallengeSchema);
-exports.validateUpdateChallenge = validate(updateChallenge);
-exports.validateGetChallenge = validate(getChallenge);
+exports.validateUpdateChallenge = validate(updateChallengeSchema);
+exports.validateGetChallenge = validate(getChallengeSchema);

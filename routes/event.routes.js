@@ -5,7 +5,7 @@ const User = require("../models/UserModel");
 const GroupEvent = require("../models/GroupEventModel");
 const Challenge = require("../models/ChallengeModel");
 const convertImage = require("../util/util");
-const {validateEvent} = require("../validation/eventValidator");
+const {validateEvent, validateGetUsersEvents} = require("../validation/eventValidator");
 
 
 router.post("/", (req,res,next) => {
@@ -109,7 +109,15 @@ router.put("", (req,res,next) => {
 
 router.get("/:userId", (req,res,next) => {
   (async () => {
-    const userId = req.params.userId;
+    const {error, value} = validateGetUsersEvents(req.params);
+
+    if(error){
+      res.status(422);
+      res.send(error.details);
+      return;
+    }
+
+    const {userId} = value;
 
     const result = await User.checkUser(userId);
 

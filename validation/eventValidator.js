@@ -15,4 +15,9 @@ const eventSchema = Joi.object().keys({
   eventId: id
 })
 
+const getEventsByUserIdSchema = Joi.object().keys({
+  id
+});
+
 exports.validateEvent = validate(eventSchema);
+exports.validateGetUsersEvents = validate(getEventsByUserIdSchema)
