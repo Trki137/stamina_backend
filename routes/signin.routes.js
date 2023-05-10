@@ -2,11 +2,11 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/UserModel");
 const fs = require("fs");
-const {googleSignIn,signIn} = require("../validation/signInValidator");
+const {validateGoogleSignIn,validateSignIn} = require("../validation/signInValidator");
 
 router.post("", (req, res, next) => {
   (async () => {
-    const {error, value} = signIn(req.body);
+    const {error, value} = validateSignIn(req.body);
 
     if(error){
       res.status(422);
@@ -52,7 +52,7 @@ router.post("", (req, res, next) => {
 
 router.post("/google-sign-in", (req,res,next) => {
   (async () => {
-    const {error, value} = googleSignIn(req.body);
+    const {error, value} = validateGoogleSignIn(req.body);
 
     if(error){
       res.status(422);

@@ -25,5 +25,5 @@ const googleSignInSchema = Joi.object().keys({
   lastname: username,
   image
 })
-exports.signIn = validate(signInSchema);
-exports.googleSignIn = validate(googleSignInSchema);
+exports.validateSignIn = validate(signInSchema);
+exports.validateGoogleSignIn = validate(googleSignInSchema);

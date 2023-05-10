@@ -3,10 +3,21 @@ const router = express.Router();
 const Challenge = require("../models/ChallengeModel");
 const Event = require("../models/EventModel");
 const convertImage = require("../util/util");
+const {validateAddChallenge,validateUpdateChallenge,validateGetChallenge} = require("../validation/challengeValidation");
 
 router.get("/:id", (req,res,next) => {
   (async () => {
-    let result = await Challenge.getAllChallenges(req.params.id);
+    const {error, value} = validateGetChallenge(req.params);
+
+    if(error){
+      res.status(422);
+      res.send(error.details);
+      return;
+    }
+
+    const {id} = value;
+
+    let result = await Challenge.getAllChallenges(id);
 
     if(!result){
       res.status(500);
@@ -23,7 +34,16 @@ router.get("/:id", (req,res,next) => {
 
 router.post("", (req, res,next) => {
   (async () => {
-    const {name,description,userId,date} = req.body;
+
+    const {error, value} = validateAddChallenge(req.body);
+
+    if(error){
+      res.status(422);
+      res.send(error.details);
+      return;
+    }
+
+    const {name,description,userId,date} = value;
 
     const challenge = new Challenge(userId,name,description,date);
     let result = await challenge.saveChallenge();
@@ -43,7 +63,15 @@ router.post("", (req, res,next) => {
 
 router.put("", (req,res,next) => {
   (async () => {
-    const {eventId, date,name,description} = req.body;
+    const {error, value} = validateUpdateChallenge(req.body);
+
+    if(error){
+      res.status(422);
+      res.send(error.details);
+      return;
+    }
+
+    const {eventId,date,name,description} = value;
 
     let result = await Event.checkEvent(eventId);
 
