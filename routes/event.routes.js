@@ -20,9 +20,7 @@ router.post("/", (req,res,next) => {
       return;
     }
 
-    console.log(value);
-
-    const {userId, eventId} = req.body;
+    const {userId, eventId} = value;
     let result = await checkUserAndEvent(userId,eventId,res);
 
     if(!result) return;
@@ -52,7 +50,7 @@ router.delete("", (req,res,next) => {
       return;
     }
 
-    const {userId, eventId} = req.body;
+    const {userId, eventId} = value;
     let result = await checkUserAndEvent(userId,eventId,res);
 
     if(!result) return;
@@ -81,7 +79,7 @@ router.put("", (req,res,next) => {
       return;
     }
 
-    const {userId,eventId} = req.body;
+    const {userId,eventId} = value;
 
     let result = await User.checkUser(userId);
 
