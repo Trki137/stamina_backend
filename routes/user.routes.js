@@ -1,11 +1,10 @@
 const express = require("express");
 const router = express.Router();
-
 const User = require("../models/UserModel");
 const sharp = require("sharp");
-
 const multer = require("multer");
 const fs = require("fs");
+const {validateFollowUnfollow,validateParamUserId,validateUpdateWithoutImage} = require("../validation/userValidator");
 
 const upload = multer({
   storage: multer.diskStorage({
@@ -20,7 +19,15 @@ const upload = multer({
 
 router.get("/followers/:id", (req, res, next) => {
   (async () => {
-    const id = req.params.id;
+    const {error, value} = validateParamUserId(req.params);
+
+    if(error){
+      res.status(422);
+      res.send(error.details);
+      return;
+    }
+
+    const {id} = value;
 
     let result = await User.getFollowers(id);
     result = await convertImage(result);
@@ -31,7 +38,15 @@ router.get("/followers/:id", (req, res, next) => {
 
 router.get("/following/:id", (req, res, next) => {
   (async () => {
-    const id = req.params.id;
+    const {error, value} = validateParamUserId(req.params);
+
+    if(error){
+      res.status(422);
+      res.send(error.details);
+      return;
+    }
+
+    const {id} = value;
 
     let result = await User.getFollowing(id);
     result = await convertImage(result);
@@ -42,7 +57,15 @@ router.get("/following/:id", (req, res, next) => {
 
 router.get("/allUsers/:id", (req, res, next) => {
   (async () => {
-    const id = req.params.id;
+    const {error, value} = validateParamUserId(req.params);
+
+    if(error){
+      res.status(422);
+      res.send(error.details);
+      return;
+    }
+
+    const {id} = value;
 
     let result = await User.getOtherUsers(id);
 
@@ -59,15 +82,33 @@ router.get("/allUsers/:id", (req, res, next) => {
 });
 router.post("/follow", (req, res, next) => {
   (async () => {
-    const userIdFollowed = req.body.followed;
-    const userIdFollowedBy = req.body.followedBy;
+    const {error, value} = validateFollowUnfollow(req.body);
 
-    if (!userIdFollowedBy || !userIdFollowed) {
-      res.send("Error. Expected 2 users");
+    if(error){
+      res.status(422);
+      res.send(error.details);
       return;
     }
 
-    const result = await User.follow(userIdFollowed, userIdFollowedBy);
+    const {followed,followedBy} = value;
+
+    let result = await User.checkUser(followed);
+
+    if(!result){
+      res.status(404);
+      res.send("User with userid "+ followed+" doesn't exist");
+      return;
+    }
+
+    result = await User.checkUser(followedBy);
+
+    if(!result){
+      res.status(404);
+      res.send("User with userid "+ followedBy +" doesn't exist");
+      return;
+    }
+
+    result = await User.follow(followed, followedBy);
 
     if (!result) {
       res.status(500);
@@ -79,15 +120,34 @@ router.post("/follow", (req, res, next) => {
 });
 router.post("/unfollow", (req, res, next) => {
   (async () => {
-    const userIdFollowed = req.body.followed;
-    const userIdFollowedBy = req.body.followedBy;
+    const {error, value} = validateFollowUnfollow(req.body);
 
-    if (!userIdFollowedBy || !userIdFollowed) {
-      res.send("Error. Expected 2 users");
+    if(error){
+      res.status(422);
+      res.send(error.details);
       return;
     }
 
-    const result = await User.unfollow(userIdFollowed, userIdFollowedBy);
+    const {followed,followedBy} = value;
+
+
+    let result = await User.checkUser(followed);
+
+    if(!result){
+      res.status(404);
+      res.send("User with userid "+ followed+" doesn't exist");
+      return;
+    }
+
+    result = await User.checkUser(followedBy);
+
+    if(!result){
+      res.status(404);
+      res.send("User with userid "+ followedBy +" doesn't exist");
+      return;
+    }
+
+    result = await User.unfollow(followed, followedBy);
 
     if (!result) {
       res.status(500);
@@ -144,22 +204,40 @@ router.post("/:id", (req, res, next) => {
 
 router.put("/update/:id", (req, res, next) => {
   (async () => {
-    const userId = req.params.id;
-    console.log(userId);
-    const oldImageName = await User.getImage(userId);
 
+    const {error,value} = validateUpdateWithoutImage(req.body);
+
+    if(error){
+      res.status(422);
+      res.send(error.details);
+      return;
+    }
+
+    const {firstname,lastname,username,email,description} = value;
+
+
+    const userId = req.params.id;
+
+    let result = await User.checkUser(req.params.id);
+
+    if(!result){
+      res.status(404);
+      res.send("User with userid "+ followed+" doesn't exist");
+      return;
+    }
+
+    const oldImageName = await User.getImage(userId);
     const user = new User(
-      req.body.firstname,
-      req.body.lastname,
-      req.body.username,
-      req.body.email,
+      firstname,
+      lastname,
+      username,
+      email,
       null,
       oldImageName,
-      req.body.description
+      description
     );
 
-    console.log(user);
-    const result = await user.update(userId);
+    result = await user.update(userId);
 
     if (!result) {
       res.status(500);

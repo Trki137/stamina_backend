@@ -16,7 +16,6 @@ router.post("", (req, res, next) => {
 
 
     const training = new Training(req.body.time, req.body.name, req.body.intensity, req.body.description, req.body.avg_calories, req.body.numOfSets,req.body.restBetweenSets,req.body.restBetweenWorkouts,workouts);
-    console.log(training);
     const result = await training.addWorkout();
 
     if(!result){
