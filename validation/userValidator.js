@@ -19,8 +19,8 @@ const paramUserIdSchema = Joi.object().keys({
 });
 
 const followUnfollowSchema = Joi.object().keys({
-  userIdFollowed: id,
-  userIdFollowedBy: id
+  followed: id,
+  followedBy: id
 });
 
 const updateWithoutImageSchema = {
@@ -30,6 +30,7 @@ const updateWithoutImageSchema = {
   email,
   description
 }
+
 
 exports.validateParamUserId = validate(paramUserIdSchema);
 exports.validateFollowUnfollow = validate(followUnfollowSchema);

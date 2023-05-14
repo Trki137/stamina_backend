@@ -140,7 +140,7 @@ module.exports = class GroupEvent {
                             JOIN address ON group_event.addressid = address.addressid
                             JOIN city ON address.cityid = city.cityid
                             INNER JOIN joined_event
-                                       ON event.eventid = joined_event.eventid AND event.userid = joined_event.userid
+                                       ON event.eventid = joined_event.eventid
                    WHERE joined_event.userid = $1`;
 
     try{

@@ -85,6 +85,7 @@ router.post("/follow", (req, res, next) => {
     const {error, value} = validateFollowUnfollow(req.body);
 
     if(error){
+      console.log(error);
       res.status(422);
       res.send(error.details);
       return;
@@ -123,6 +124,7 @@ router.post("/unfollow", (req, res, next) => {
     const {error, value} = validateFollowUnfollow(req.body);
 
     if(error){
+      console.log(error);
       res.status(422);
       res.send(error.details);
       return;
