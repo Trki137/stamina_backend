@@ -1,9 +1,20 @@
 const express = require("express");
 const router = express.Router();
 const Training = require("../models/TrainingModel");
+const {validateTrainingId, validateSaveTraining} = require("../validation/trainingValidation");
 router.post("", (req, res, next) => {
   (async () => {
-    const workouts = req.body.workouts;
+
+    const {error, value} = validateSaveTraining(req.body);
+
+    if(error){
+      req.status(400);
+      req.send("Invalid body");
+      return;
+    }
+
+    const { workouts , time,name,intensity, description, avg_calories, numOfSets,restBetweenSets,restBetweenWorkouts} = value;
+
 
     if (workouts.length) {
       const result = Training.checkWorkouts(workouts);
@@ -15,7 +26,7 @@ router.post("", (req, res, next) => {
     }
 
 
-    const training = new Training(req.body.time, req.body.name, req.body.intensity, req.body.description, req.body.avg_calories, req.body.numOfSets,req.body.restBetweenSets,req.body.restBetweenWorkouts,workouts);
+    const training = new Training(time, name, intensity, description, avg_calories, numOfSets,restBetweenSets,restBetweenWorkouts,workouts);
     const result = await training.addWorkout();
 
     if(!result){
@@ -46,7 +57,15 @@ router.get("/all-training", (req,res,next) => {
 
 router.get("/:trainingId", (req,res,next) => {
   (async () => {
-    const trainingId = req.params.trainingId;
+    const { error, value } = validateTrainingId(req.params);
+
+    if(error){
+      res.status(400);
+      res.send("Invalid parameter.");
+      return;
+    }
+
+    const { trainingId } = value;
 
     const result = await Training.checkTraining(trainingId);
 
