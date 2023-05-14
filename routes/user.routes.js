@@ -179,6 +179,7 @@ router.post("/:id", (req, res, next) => {
     const {error, value} = validateParamUserId(req.params);
 
     if(error){
+      console.log("Here")
       res.status(422);
       res.send(error.details);
       return;
@@ -189,11 +190,20 @@ router.post("/:id", (req, res, next) => {
 
     const currentUserId = req.body.id;
 
-    if(!Number.isNaN(currentUserId)){
-      res.status(422);
-      res.send("Invalid id.");
-      return;
+    if(typeof currentUserId === "string"){
+      if(!(new RegExp(/^\d+$/).test(currentUserId))){
+        res.status(422);
+        res.send("Invalid id.");
+        return;
+      }
+    }else {
+      if(Number.isNaN(currentUserId)){
+        res.status(422);
+        res.send("Invalid id.");
+        return;
+      }
     }
+
 
     const result = await User.getProfile(id, currentUserId);
 
