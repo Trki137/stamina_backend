@@ -21,8 +21,8 @@ const latitude = Joi.number().min(-90).max(90).required();
 
 const updateGroupEventSchema = Joi.object().keys({
   name: cityName,
+  eventName: name,
   description,
-  userId: id,
   max_space,
   date_time,
   street,

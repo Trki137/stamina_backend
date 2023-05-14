@@ -77,7 +77,7 @@ router.post("", (req,res,next) => {
 router.get("/:userId" ,(req,res,next) => {
   (async () => {
     const userId = req.params.userId;
-
+    console.log(userId)
     const result = await User.checkUser(userId);
 
     if(!result){
