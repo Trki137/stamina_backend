@@ -35,7 +35,7 @@ router.post("", (req, res, next) => {
 
     const {email,username,firstname,lastname,password} = value;
 
-    const result = await checkUser(username, email);
+    let result = await checkUser(username, email);
 
     if (result) {
       res.status(409);
@@ -55,7 +55,7 @@ router.post("", (req, res, next) => {
 
     await user.signup();
 
-    res.send(user);
+    res.send("OK");
   })();
 });
 
@@ -75,11 +75,11 @@ router.post("/sign-up-with-image", upload.single("image"), (req, res, next) => {
     const {email,username,firstname,lastname,password} = value;
 
     const result = await checkUser(username, email);
-
     if (result) {
       res.status(409);
       res.send(result);
       return;
+
     }
 
     const user = new User(
@@ -93,24 +93,19 @@ router.post("/sign-up-with-image", upload.single("image"), (req, res, next) => {
     );
     await user.signup();
 
-    const imagePath = "./images/" + fileName;
-    const imageData = fs.readFileSync(imagePath);
-    const base64ImageData = Buffer.from(imageData).toString("base64");
-    const data = { user, image: base64ImageData };
-
-    delete user.password;
-    res.send(data);
+    res.send("OK");
   })();
 });
 
-const checkUser = async (email, username) => {
+const checkUser = async (username, email) => {
   let result = await User.checkEmail(email);
 
   if (result) {
     return result;
   }
+  result =await User.checkUsername(username);
 
-  return await User.checkUsername(username);
+  return result ? result : false;
 };
 
 module.exports = router;

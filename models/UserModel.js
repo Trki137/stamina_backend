@@ -289,7 +289,7 @@ module.exports = class UserModel {
 
 
   async signup() {
-    const query = `INSERT INTO users
+    let query = `INSERT INTO users
                            (username, email, password, description, image, firstname, lastname)
                        VALUES ($1, $2, $3, $4, $5, $6, $7)`;
 
@@ -305,6 +305,7 @@ module.exports = class UserModel {
           this.lastname,
         ]);
       });
+
     } catch (e) {
       console.log(e);
     }

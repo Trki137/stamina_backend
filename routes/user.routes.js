@@ -176,8 +176,25 @@ const convertImage = async (data) => {
 
 router.post("/:id", (req, res, next) => {
   (async () => {
-    const id = req.params.id;
+    const {error, value} = validateParamUserId(req.params);
+
+    if(error){
+      res.status(422);
+      res.send(error.details);
+      return;
+    }
+
+
+    const {id} = value;
+
     const currentUserId = req.body.id;
+
+    if(!Number.isNaN(currentUserId)){
+      res.status(422);
+      res.send("Invalid id.");
+      return;
+    }
+
     const result = await User.getProfile(id, currentUserId);
 
     if (!result) {
