@@ -3,7 +3,14 @@ const router = express.Router();
 const User = require("../models/UserModel");
 const multer = require("multer");
 const fs = require("fs");
+const {validateSingUp} = require("../validation/signUpValidation");
+const e = require("express");
 
+const fileFilter = function(req,file,cb){
+  if(file.mimetype === 'image/jpeg' || file.mimetype === 'image/png'){
+    cb(null,true);
+  }else cb(new Error("Invalid image."), false);
+}
 const upload = multer({
   storage: multer.diskStorage({
     destination: function (req, file, cb) {
@@ -13,12 +20,20 @@ const upload = multer({
       cb(null, Date.now() + "_" + file.originalname);
     },
   }),
+  fileFilter: fileFilter
 });
 
 router.post("", (req, res, next) => {
   (async () => {
-    const email = req.body.email;
-    const username = req.body.username;
+    const {error, value} = validateSingUp(req.body);
+
+    if(error){
+      res.status(400);
+      res.send("Invalid body");
+      return;
+    }
+
+    const {email,username,firstname,lastname,password} = value;
 
     const result = await checkUser(username, email);
 
@@ -29,11 +44,11 @@ router.post("", (req, res, next) => {
     }
 
     const user = new User(
-      req.body.firstname,
-      req.body.lastname,
+      firstname,
+      lastname,
       username,
       email,
-      req.body.password,
+      password,
       null,
       null
     );
@@ -49,8 +64,15 @@ router.post("/sign-up-with-image", upload.single("image"), (req, res, next) => {
     const fileName = req.file.filename;
     const userData = JSON.parse(req.body.userInfo);
 
-    const email = userData.email;
-    const username = userData.username;
+    const {error, value} = validateSingUp(userData);
+
+    if(error){
+      res.status(400);
+      res.send("Invalid body");
+      return;
+    }
+
+    const {email,username,firstname,lastname,password} = value;
 
     const result = await checkUser(username, email);
 
@@ -61,11 +83,11 @@ router.post("/sign-up-with-image", upload.single("image"), (req, res, next) => {
     }
 
     const user = new User(
-      userData.firstname,
-      userData.lastname,
+      firstname,
+      lastname,
       username,
       email,
-      userData.password,
+      password,
       fileName,
       null
     );
