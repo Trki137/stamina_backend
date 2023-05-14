@@ -1,9 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const Workout = require("../models/WorkoutModel");
+const {validateAddWorkout} = require("../validation/workoutValidation");
 router.post("", (req,res,next) => {
   (async () => {
-    const equipment = req.body.equipment;
+    const {error, value} = validateAddWorkout(req.body);
+
+    if(error){
+      res.status(400);
+      res.send("Invalid body.");
+      return;
+    }
+
+    const {equipment, muscleTargeted,name,description,intensity} = value;
+
     if(equipment && equipment.length > 0){
       const result = await Workout.checkEquipment(equipment);
       if(!result){
@@ -13,7 +23,6 @@ router.post("", (req,res,next) => {
       }
     }
 
-    const muscleTargeted = req.body.muscleTargeted;
     if(muscleTargeted.length > 0) {
       const result = await Workout.checkMuscles(muscleTargeted);
       if(!result){
@@ -23,7 +32,7 @@ router.post("", (req,res,next) => {
       }
     }
 
-    const workout = new Workout(req.body.name,req.body.description,req.body.intensity,equipment,muscleTargeted);
+    const workout = new Workout(name,description,intensity,equipment,muscleTargeted);
 
     const result = await workout.addWorkout();
 
