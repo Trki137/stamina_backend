@@ -2,11 +2,19 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/UserModel");
 const fs = require("fs");
+const {validateGoogleSignIn,validateSignIn} = require("../validation/signInValidator");
 
 router.post("", (req, res, next) => {
   (async () => {
-    const username = req.body.username;
-    const password = req.body.password;
+    const {error, value} = validateSignIn(req.body);
+
+    if(error){
+      res.status(422);
+      res.send(error.details);
+      return;
+    }
+
+    const {username, password} = value;
 
     if (!username) {
       res.status(500);
@@ -44,7 +52,15 @@ router.post("", (req, res, next) => {
 
 router.post("/google-sign-in", (req,res,next) => {
   (async () => {
-    const {email,username, firstname, lastname,image} = req.body;
+    const {error, value} = validateGoogleSignIn(req.body);
+
+    if(error){
+      res.status(422);
+      res.send(error.details);
+      return;
+    }
+
+    const {email,username, firstname, lastname,image} = value;
 
     let result = await User.checkUsernameExists(username);
 
@@ -55,9 +71,7 @@ router.post("/google-sign-in", (req,res,next) => {
     }
 
     const user = new User(firstname,lastname,username,email,null,image,null);
-    console.log(user);
     result = await user.saveGoogleLogin();
-    console.log(result);
     if(!result){
       res.status(500);
       res.send("Please try again later");

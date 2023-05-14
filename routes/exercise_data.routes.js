@@ -10,7 +10,21 @@ const storage = multer.memoryStorage();
 const TCXParser = require("../util/TCXParser");
 const FITParser = require("../util/FITParser");
 
-const upload = multer({storage: storage});
+
+const fileFilterTcx = function(req,file,cb)  {
+  if(file.originalname.endsWith(".tcx")){
+    cb(null,true);
+  }else cb(new Error("Invalid file type"),false);
+}
+
+const fileFilterFit = function(req,file,cb)  {
+  if(file.originalname.endsWith(".fit")){
+    cb(null,true);
+  }else cb(new Error("Invalid file type"),false);
+}
+
+const upload = multer({storage: storage, fileFilter: fileFilterFit});
+
 const uploadFile = multer({
   storage: multer.diskStorage({
     destination: function (req, file, cb) {
@@ -20,7 +34,11 @@ const uploadFile = multer({
       cb(null, Date.now() + "_" + file.originalname);
     },
   }),
+  fileFilter: fileFilterTcx
 });
+
+
+
 router.post("", (req,res,next) => {
   (async () => {
     const {name,date,userId,trainingId, time, calories,avg_hearth_rate} = req.body;
@@ -85,7 +103,6 @@ router.post("/file",upload.single('file'), (req,res,next) => {
   (async () => {
     const file = req.file;
     const userId = JSON.parse(req.body.userId);
-
     let result = await User.checkUser(userId);
 
     if(!result){
@@ -104,7 +121,7 @@ router.post("/file",upload.single('file'), (req,res,next) => {
     }
 
     data.userId = userId;
-    result = await data.saveExerciseData();
+    //result = await data.saveExerciseData();
 
     if(!result){
       res.status(500);
@@ -119,7 +136,6 @@ router.post("/file",upload.single('file'), (req,res,next) => {
 router.post("/file-tcx",uploadFile.single('file'), (req,res,next) => {
   (async () => {
     const userId = JSON.parse(req.body.userId);
-
     let result = await User.checkUser(userId);
 
     if(!result){
@@ -148,7 +164,7 @@ router.post("/file-tcx",uploadFile.single('file'), (req,res,next) => {
     }
 
     data.userId = userId;
-    result = await data.saveExerciseData();
+    //result = await data.saveExerciseData();
 
     if(!result){
       res.status(500);

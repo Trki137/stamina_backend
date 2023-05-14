@@ -6,10 +6,19 @@ const GroupEvent = require("../models/GroupEventModel");
 const City = require("../models/CityModel");
 const Address = require("../models/AddressModel");
 const convertImage = require("../util/util");
+const {validateSaveGroupEvent,validateUpdateGroupeEvent,validateUserId} = require("../validation/groupEventValidation");
 
 router.post("", (req,res,next) => {
   (async () => {
-    const {name, description,userId, max_space,date_time, street,pbr,cityName,latitude,longitude} = req.body;
+    const {error, value} = validateSaveGroupEvent(req.body);
+
+    if(error){
+      res.status(400);
+      res.send("Invalid body");
+      return
+    }
+
+    const {name, description,userId, max_space,date_time, street,pbr,cityName,latitude,longitude} = value;
 
     let result = await User.checkUser(userId);
 
@@ -39,7 +48,17 @@ router.post("", (req,res,next) => {
 
 router.get("/:id", (req,res,next) => {
   (async () => {
-    let result = await GroupEvent.getAllEvents(req.params.id);
+    const {error, value} = validateUserId(req.params);
+
+    if(error){
+      res.status(400);
+      res.send("Invalid body");
+      return
+    }
+
+    const {id} = value;
+
+    let result = await GroupEvent.getAllEvents(id);
 
     if(!result){
       res.status(500);
@@ -56,7 +75,14 @@ router.get("/:id", (req,res,next) => {
 
 router.put("", (req,res,next) => {
   (async () =>  {
-    const {max_space,date_time,eventId,cityId,pbr,name,addressId,street,latitude,longitude,eventName, description} = req.body;
+    const {error, value} = validateUpdateGroupeEvent(req.body);
+
+    if(error){
+      res.status(400);
+      res.send("Invalid body");
+      return
+    }
+    const {max_space,date_time,eventId,cityId,pbr,name,addressId,street,latitude,longitude,eventName, description} = value;
 
     let result = await Event.checkEvent(eventId);
     if(!result){
