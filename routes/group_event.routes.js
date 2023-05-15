@@ -83,7 +83,6 @@ router.put("", (req,res,next) => {
       return
     }
     const {max_space,date_time,eventId,cityId,pbr,name,addressId,street,latitude,longitude,eventName, description} = value;
-
     let result = await Event.checkEvent(eventId);
     if(!result){
       res.status(404);

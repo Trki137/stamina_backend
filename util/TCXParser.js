@@ -11,8 +11,9 @@ module.exports = class TCXParser{
     try{
       const parser = new TCX.Parser(this.path);
       let sport = parser.activity.sport ? parser.activity.sport.split(".")[0] : "Unknown";
-      const date = parser.activity.trackpoints[0].time.split("T")[0];
-      const distance = parser.activity.trackpoints[0].distance_meters;
+      let date = parser.activity.trackpoints[0].time.split("T")[0];
+      if(date != null)
+        date = this.formatDate(date)
 
       sport = sport === "Calisthenics" ? "Running" : sport;
 
@@ -33,4 +34,12 @@ module.exports = class TCXParser{
       fs.unlinkSync(this.path);
     }
   };
+
+
+  formatDate(oldDate){
+    console.log(oldDate);
+    const split = oldDate.split("-");
+
+    return split[2]+"."+split[1]+"."+split[0];
+  }
 }

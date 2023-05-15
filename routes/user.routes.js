@@ -85,6 +85,7 @@ router.post("/follow", (req, res, next) => {
     const {error, value} = validateFollowUnfollow(req.body);
 
     if(error){
+      console.log(error);
       res.status(422);
       res.send(error.details);
       return;
@@ -123,6 +124,7 @@ router.post("/unfollow", (req, res, next) => {
     const {error, value} = validateFollowUnfollow(req.body);
 
     if(error){
+      console.log(error);
       res.status(422);
       res.send(error.details);
       return;
@@ -176,8 +178,35 @@ const convertImage = async (data) => {
 
 router.post("/:id", (req, res, next) => {
   (async () => {
-    const id = req.params.id;
+    const {error, value} = validateParamUserId(req.params);
+
+    if(error){
+      console.log("Here")
+      res.status(422);
+      res.send(error.details);
+      return;
+    }
+
+
+    const {id} = value;
+
     const currentUserId = req.body.id;
+
+    if(typeof currentUserId === "string"){
+      if(!(new RegExp(/^\d+$/).test(currentUserId))){
+        res.status(422);
+        res.send("Invalid id.");
+        return;
+      }
+    }else {
+      if(Number.isNaN(currentUserId)){
+        res.status(422);
+        res.send("Invalid id.");
+        return;
+      }
+    }
+
+
     const result = await User.getProfile(id, currentUserId);
 
     if (!result) {

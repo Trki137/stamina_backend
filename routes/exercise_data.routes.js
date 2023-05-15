@@ -77,7 +77,6 @@ router.post("", (req,res,next) => {
 router.get("/:userId" ,(req,res,next) => {
   (async () => {
     const userId = req.params.userId;
-
     const result = await User.checkUser(userId);
 
     if(!result){
@@ -121,7 +120,7 @@ router.post("/file",upload.single('file'), (req,res,next) => {
     }
 
     data.userId = userId;
-    //result = await data.saveExerciseData();
+    result = await data.saveExerciseData();
 
     if(!result){
       res.status(500);
@@ -163,8 +162,10 @@ router.post("/file-tcx",uploadFile.single('file'), (req,res,next) => {
       return;
     }
 
+    console.log(data);
+
     data.userId = userId;
-    //result = await data.saveExerciseData();
+    result = await data.saveExerciseData();
 
     if(!result){
       res.status(500);
