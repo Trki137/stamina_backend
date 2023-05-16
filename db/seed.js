@@ -137,11 +137,12 @@ const sql_create_workout_equipment_table = `
 const sql_create_training_plan_table = `
     CREATE TABLE training_plan
     (
+        training_plan_id SERIAL NOT NULL,
         workoutId  INT NOT NULL,
         trainingId INT NOT NULL,
         time varchar(4),
         repetition INT,
-        PRIMARY KEY (workoutId, trainingId),
+        PRIMARY KEY (training_plan_id),
         FOREIGN KEY (workoutId) REFERENCES WORKOUT (workoutId),
         FOREIGN KEY (trainingId) REFERENCES TRAINING (trainingId)
     );

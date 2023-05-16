@@ -8,8 +8,9 @@ router.post("", (req, res, next) => {
     const {error, value} = validateSaveTraining(req.body);
 
     if(error){
-      req.status(400);
-      req.send("Invalid body");
+      console.log(error);
+      res.status(400);
+      res.send("Invalid body");
       return;
     }
 

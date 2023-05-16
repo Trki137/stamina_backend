@@ -15,7 +15,11 @@ const intensity = Joi.string().valid("low","moderate","high", "extreme").require
 const description = Joi.string().required().allow("");
 const avg_calories = Joi.number();
 const numberSchema = Joi.number().required();
-const workouts = Joi.array().items(Joi.number());
+const workouts = Joi.array().items(Joi.object().keys({
+  workoutid: Joi.number().required(),
+  time: Joi.number().allow(null),
+  repetition: Joi.number().allow(null),
+}));
 const id = Joi.number().required();
 
 const saveTrainingSchema = Joi.object().keys({

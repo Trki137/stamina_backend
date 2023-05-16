@@ -52,8 +52,6 @@ module.exports = class Workout {
     try {
       let workoutId = await db.query(workoutQuery, [this.name, this.description, this.intensity]);
       workoutId = workoutId.rows[0].workoutid;
-      console.log("Stored workout id = " + workoutId);
-      console.log(this.equipment);
       if (this.equipment && this.equipment.length > 0) {
         for (let i = 0; i < this.equipment.length; i++) {
           const result = await db.query(workoutEquipmentQuery, [workoutId, this.equipment[i]]);

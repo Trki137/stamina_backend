@@ -4,8 +4,6 @@ const Exercise = require("../models/ExerciseDataModel");
 const User = require("../models/UserModel");
 const Training = require("../models/TrainingModel");
 const multer = require("multer");
-const gpxParser = require("gpxparser")
-const GpxParser = require("gpxparser");
 const storage = multer.memoryStorage();
 const TCXParser = require("../util/TCXParser");
 const FITParser = require("../util/FITParser");
@@ -162,7 +160,6 @@ router.post("/file-tcx",uploadFile.single('file'), (req,res,next) => {
       return;
     }
 
-    console.log(data);
 
     data.userId = userId;
     result = await data.saveExerciseData();
