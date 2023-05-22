@@ -23,6 +23,7 @@ const googleSignInSchema = Joi.object().keys({
   password: googlePassword,
   firstname: username,
   lastname: username,
+  email: username,
   image
 })
 exports.validateSignIn = validate(signInSchema);

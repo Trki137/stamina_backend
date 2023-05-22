@@ -26,6 +26,13 @@ module.exports = class UserModel {
     return result.rowCount > 0 ? result.rows[0] : null;
   }
 
+  static async getUserByEmail(email) {
+    const query = `SELECT * FROM users WHERE email = $1`;
+    const result = await db.query(query, [email]);
+
+    return result.rowCount > 0 ? result.rows[0] : null;
+  }
+
   static async getImage(id) {
     const query = `SELECT image
                        FROM users

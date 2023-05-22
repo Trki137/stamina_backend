@@ -277,6 +277,7 @@ router.put("/update/:id", (req, res, next) => {
     res.send("Success");
   })();
 });
+
 router.put(
   "/update-with-image/:id",
   upload.single("image"),
@@ -287,7 +288,7 @@ router.put(
       const userData = JSON.parse(req.body.userInfo);
 
       const oldImageName = await User.getImage(userId);
-
+      console.log(oldImageName);
       if (oldImageName) {
         fs.unlink("./images/" + oldImageName, (err) => {
           if (err) throw err;
