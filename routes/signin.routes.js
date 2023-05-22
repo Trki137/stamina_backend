@@ -3,6 +3,8 @@ const router = express.Router();
 const User = require("../models/UserModel");
 const fs = require("fs");
 const {validateGoogleSignIn,validateSignIn} = require("../validation/signInValidator");
+const convertImage = require("../util/util");
+
 
 router.post("", (req, res, next) => {
   (async () => {
@@ -61,11 +63,18 @@ router.post("/google-sign-in", (req,res,next) => {
     }
 
     const {email,username, firstname, lastname,image} = value;
+    let result = await User.checkEmail(email);
 
-    let result = await User.checkUsernameExists(username);
+    if(result){
+      result = await User.getUserByEmail(email);
+      if(!result){
+        res.status(500);
+        res.send("Please try again later");
+        return;
+      }
 
-    if(!result){
-      result = await User.getUser(username);
+      await convertImage([result]);
+
       res.send(result);
       return;
     }
@@ -80,6 +89,7 @@ router.post("/google-sign-in", (req,res,next) => {
 
     res.send(result);
   })();
+
 })
 
 module.exports = router;
